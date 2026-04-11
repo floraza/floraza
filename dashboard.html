@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Admin Dashboard</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #2e7d32;
+    color: white;
+    position: fixed;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+/* Content */
+.content {
+    margin-left: 240px;
+    padding: 20px;
+}
+
+/* Cards */
+.card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+
+button {
+    padding: 10px 20px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Top bar */
+.topbar {
+    background: #f4f4f4;
+    padding: 10px;
+    text-align: right;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Floraza Admin</h2>
+    <a href="#">Dashboard</a>
+    <a href="#">Products</a>
+    <a href="#">Services</a>
+    <a href="#">Media</a>
+    <a href="#">Careers</a>
+</div>
+
+<div class="content">
+
+    <div class="topbar">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <h1>Welcome, Admin 👋</h1>
+
+    <!-- ADD PRODUCT -->
+    <div class="card">
+        <h3>Add Product</h3>
+        <input type="text" id="productName" placeholder="Product Name">
+        <textarea id="productDesc" placeholder="Product Description"></textarea>
+        <button onclick="addProduct()">Add Product</button>
+    </div>
+
+    <!-- ADD JOB -->
+    <div class="card">
+        <h3>Post Job</h3>
+        <input type="text" id="jobTitle" placeholder="Job Title">
+        <textarea id="jobDesc" placeholder="Job Description"></textarea>
+        <button onclick="addJob()">Post Job</button>
+    </div>
+
+    <!-- DISPLAY DATA -->
+    <div class="card">
+        <h3>Saved Data (Temporary)</h3>
+        <div id="output"></div>
+    </div>
+
+</div>
+
+<script>
+let products = [];
+let jobs = [];
+
+function addProduct() {
+    let name = document.getElementById("productName").value;
+    let desc = document.getElementById("productDesc").value;
+
+    if(name === "" || desc === "") {
+        alert("Fill all fields");
+        return;
+    }
+
+    products.push({name, desc});
+    displayData();
+}
+
+function addJob() {
+    let title = document.getElementById("jobTitle").value;
+    let desc = document.getElementById("jobDesc").value;
+
+    if(title === "" || desc === "") {
+        alert("Fill all fields");
+        return;
+    }
+
+    jobs.push({title, desc});
+    displayData();
+}
+
+function displayData() {
+    let output = "<h4>Products:</h4>";
+    products.forEach(p => {
+        output += "<p><b>" + p.name + "</b> - " + p.desc + "</p>";
+    });
+
+    output += "<h4>Jobs:</h4>";
+    jobs.forEach(j => {
+        output += "<p><b>" + j.title + "</b> - " + j.desc + "</p>";
+    });
+
+    document.getElementById("output").innerHTML = output;
+}
+
+function logout() {
+    window.location.href = "admin.html";
+}
+</script>
+
+</body>
+</html>
