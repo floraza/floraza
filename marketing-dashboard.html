@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Dashboard - Floraza</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f4f6f9;
+}
+
+/* Header */
+.header {
+  background: #2e7d32;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+}
+
+/* Container */
+.container {
+  padding: 20px;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Sections */
+.section {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Inputs */
+input, select {
+  padding: 10px;
+  margin: 5px;
+  width: 200px;
+}
+
+/* Button */
+button {
+  padding: 10px 15px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1b5e20;
+}
+
+/* Table */
+table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">Floraza Marketing Dashboard</div>
+
+<div class="container">
+
+<!-- STAFF PROFILE -->
+
+<div class="section">
+<h3>Marketing Executive Profile</h3>
+<input type="text" id="staffName" placeholder="Name">
+<input type="text" id="staffPosition" placeholder="Position">
+<input type="file" id="staffPhoto">
+<button onclick="saveProfile()">Save Profile</button>
+
+<p id="profileDisplay"></p>
+</div>
+
+<!-- SUMMARY -->
+
+<div class="cards">
+  <div class="card">Total Farmers<br><h2 id="totalFarmers">0</h2></div>
+  <div class="card">Total Area (Acres)<br><h2 id="totalArea">0</h2></div>
+  <div class="card">Total Plants<br><h2 id="totalPlants">0</h2></div>
+  <div class="card">Fertilizer Sold (kg)<br><h2 id="fertilizer">0</h2></div>
+  <div class="card">This Month Sales ₹<br><h2 id="sales">0</h2></div>
+  <div class="card">Commission ₹<br><h2 id="commission">0</h2></div>
+</div>
+
+<!-- ORDER SECTION -->
+
+<div class="section">
+<h3>Place Order</h3>
+
+<select id="product">
+  <option value="nutri">Nutri Jack Powder (₹1750/kg)</option>
+  <option value="plant">Jackfruit Plant (₹250)</option>
+  <option value="humate">Potassium Humate (₹500/kg)</option>
+  <option value="seaweed">Seaweed Gel (₹400/kg)</option>
+</select>
+
+<input type="number" id="qty" placeholder="Quantity">
+<button onclick="addOrder()">Add Order</button>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Amount</th>
+<th>Commission</th>
+</tr>
+</thead>
+<tbody id="orderTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+let totalSales = 0;
+let totalCommission = 0;
+
+function addOrder() {
+  let product = document.getElementById("product").value;
+  let qty = parseInt(document.getElementById("qty").value);
+
+  if(!qty) return alert("Enter quantity");
+
+  let price = 0;
+  let commission = 0;
+
+  if(product === "nutri") {
+    price = 1750;
+    commission = 400;
+  }
+  else if(product === "plant") {
+    price = 250;
+    commission = 8;
+  }
+  else if(product === "humate") {
+    price = 500;
+    commission = 50;
+  }
+  else if(product === "seaweed") {
+    price = 400;
+    commission = 50;
+  }
+
+  let amount = price * qty;
+  let comm = commission * qty;
+
+  totalSales += amount;
+  totalCommission += comm;
+
+  document.getElementById("sales").innerText = totalSales;
+  document.getElementById("commission").innerText = totalCommission;
+
+  let row = `
+    <tr>
+      <td>${product}</td>
+      <td>${qty}</td>
+      <td>₹${amount}</td>
+      <td>₹${comm}</td>
+    </tr>
+  `;
+
+  document.getElementById("orderTable").innerHTML += row;
+}
+
+function saveProfile() {
+  let name = document.getElementById("staffName").value;
+  let position = document.getElementById("staffPosition").value;
+
+  document.getElementById("profileDisplay").innerText =
+    "Name: " + name + " | Position: " + position;
+}
+</script>
+
+</body>
+</html>
