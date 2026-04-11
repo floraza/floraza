@@ -1,109 +1,131 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - FLORAZA ORGANICS LTD</title>
+<title>Floraza Login</title>
 
 <style>
 body {
     margin: 0;
-    font-family: Arial;
-    background: linear-gradient(to right, #2e7d32, #66bb6a);
+    font-family: Arial, sans-serif;
+    background: #3f8f3f;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-/* LOGIN BOX */
+/* Login Box */
 .login-box {
-    background: white;
+    background: #fff;
     padding: 40px;
+    width: 350px;
     border-radius: 10px;
-    width: 320px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     text-align: center;
 }
 
 .login-box h2 {
-    margin-bottom: 20px;
     color: #2e7d32;
+    margin-bottom: 20px;
 }
 
-input, select {
+/* Inputs */
+select, input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
+/* Button */
 button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #2e7d32;
-    color: white;
+    color: #fff;
     border: none;
+    font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
 }
 
-.back {
-    display: block;
+button:hover {
+    background: #1b5e20;
+}
+
+/* Back link */
+.back-link {
     margin-top: 15px;
-    text-decoration: none;
+    display: block;
     color: #2e7d32;
+    text-decoration: none;
 }
 </style>
-</head>
 
+</head>
 <body>
 
 <div class="login-box">
     <h2>FLORAZA LOGIN</h2>
 
-    <select id="role">
-        <option value="">Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="marketing">Marketing</option>
-        <option value="farmer">Farmer</option>
-    </select>
+```
+<!-- Role Selection -->
+<select id="role">
+    <option>Admin</option>
+    <option>Marketing</option>
+    <option>Farmer</option>
+</select>
 
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+<!-- Inputs -->
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
 
-    <button onclick="login()">Login</button>
+<!-- Login Button -->
+<button onclick="loginUser()">Login</button>
 
-    <a href="index.html" class="back">← Back to Website</a>
+<!-- Back -->
+<a href="index.html" class="back-link">← Back to Website</a>
+```
+
 </div>
 
 <script>
-
-function login() {
-
+function loginUser() {
     let role = document.getElementById("role").value;
-    let user = document.getElementById("username").value;
-    let pass = document.getElementById("password").value;
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
 
-    if(role === "" || user === "" || pass === "") {
-        alert("Please fill all fields");
-        return;
+    // Admin Login
+    if(role === "Admin") {
+        if(username === "admin" && password === "1234") {
+            window.location.href = "admin-dashboard.html";
+        } else {
+            alert("Invalid Admin Login");
+        }
     }
 
-    // SIMPLE DEMO LOGIN
-    if(role === "admin" && user === "admin" && pass === "123") {
-        window.location.href = "admin-dashboard.html";
+    // Marketing Login
+    else if(role === "Marketing") {
+        if(username === "marketing" && password === "1234") {
+            window.location.href = "marketing-dashboard.html";
+        } else {
+            alert("Invalid Marketing Login");
+        }
     }
-    else if(role === "marketing" && pass === "123") {
-        window.location.href = "marketing-dashboard.html";
-    }
-    else if(role === "farmer" && pass === "123") {
-        window.location.href = "farmer-dashboard.html";
-    }
+
+    // Farmer Login
     else {
-        alert("Invalid login");
+        if(username === "farmer" && password === "1234") {
+            window.location.href = "farmer-dashboard.html";
+        } else {
+            alert("Invalid Farmer Login");
+        }
     }
 }
-
 </script>
 
 </body>
