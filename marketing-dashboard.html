@@ -4,84 +4,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketing Dashboard - Floraza</title>
+<title>Floraza Marketing Dashboard</title>
 
 <style>
 body {
   margin: 0;
-  font-family: Arial;
-  background: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#e8f5e9,#ffffff);
 }
 
-/* Header */
+/* HEADER */
 .header {
-  background: #2e7d32;
+  background: linear-gradient(90deg,#1b5e20,#43a047);
   color: white;
-  padding: 15px;
+  padding: 20px;
   text-align: center;
-  font-size: 22px;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
-/* Container */
+/* CONTAINER */
 .container {
+  padding: 25px;
+}
+
+/* PROFILE */
+.profile {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
   padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* Cards */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 15px;
+.profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-/* Sections */
-.section {
-  margin-top: 30px;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-/* Inputs */
-input, select {
+.profile input {
   padding: 10px;
   margin: 5px;
-  width: 200px;
 }
 
-/* Button */
 button {
-  padding: 10px 15px;
   background: #2e7d32;
   color: white;
   border: none;
+  padding: 10px 15px;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 button:hover {
   background: #1b5e20;
 }
 
-/* Table */
+/* CARDS */
+.cards {
+  margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.8);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h2 {
+  margin: 10px 0;
+  color: #2e7d32;
+}
+
+/* SECTION */
+.section {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* TABLE */
 table {
   width: 100%;
   margin-top: 10px;
   border-collapse: collapse;
 }
 
-table, th, td {
-  border: 1px solid #ccc;
+th {
+  background: #2e7d32;
+  color: white;
 }
 
 th, td {
   padding: 10px;
+  border: 1px solid #ddd;
   text-align: center;
 }
 </style>
@@ -90,121 +125,118 @@ th, td {
 
 <body>
 
-<div class="header">Floraza Marketing Dashboard</div>
+<div class="header">🌱 Floraza Marketing Dashboard</div>
 
 <div class="container">
 
-<!-- STAFF PROFILE -->
+<!-- PROFILE -->
 
-<div class="section">
-<h3>Marketing Executive Profile</h3>
-<input type="text" id="staffName" placeholder="Name">
-<input type="text" id="staffPosition" placeholder="Position">
-<input type="file" id="staffPhoto">
-<button onclick="saveProfile()">Save Profile</button>
+<div class="profile">
+  <img id="preview" src="https://via.placeholder.com/80">
 
-<p id="profileDisplay"></p>
+  <div>
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="position" placeholder="Position">
+    <input type="file" onchange="loadImage(event)">
+    <br>
+    <button onclick="saveProfile()">Save</button>
+    <p id="profileText"></p>
+  </div>
 </div>
 
-<!-- SUMMARY -->
+<!-- CARDS -->
 
 <div class="cards">
-  <div class="card">Total Farmers<br><h2 id="totalFarmers">0</h2></div>
-  <div class="card">Total Area (Acres)<br><h2 id="totalArea">0</h2></div>
-  <div class="card">Total Plants<br><h2 id="totalPlants">0</h2></div>
-  <div class="card">Fertilizer Sold (kg)<br><h2 id="fertilizer">0</h2></div>
-  <div class="card">This Month Sales ₹<br><h2 id="sales">0</h2></div>
-  <div class="card">Commission ₹<br><h2 id="commission">0</h2></div>
+  <div class="card">Total Farmers<h2 id="farmers">0</h2></div>
+  <div class="card">Total Area<h2 id="area">0</h2></div>
+  <div class="card">Total Plants<h2 id="plants">0</h2></div>
+  <div class="card">Fertilizer Sold<h2 id="fertilizer">0</h2></div>
+  <div class="card">Sales ₹<h2 id="sales">0</h2></div>
+  <div class="card">Commission ₹<h2 id="commission">0</h2></div>
 </div>
 
-<!-- ORDER SECTION -->
+<!-- ORDER -->
 
 <div class="section">
 <h3>Place Order</h3>
 
 <select id="product">
-  <option value="nutri">Nutri Jack Powder (₹1750/kg)</option>
-  <option value="plant">Jackfruit Plant (₹250)</option>
-  <option value="humate">Potassium Humate (₹500/kg)</option>
-  <option value="seaweed">Seaweed Gel (₹400/kg)</option>
+<option value="nutri">Nutri Jack Powder</option>
+<option value="plant">Jackfruit Plant</option>
+<option value="humate">Potassium Humate</option>
+<option value="seaweed">Seaweed Gel</option>
 </select>
 
 <input type="number" id="qty" placeholder="Quantity">
-<button onclick="addOrder()">Add Order</button>
+<button onclick="addOrder()">Add</button>
 
 <table>
-<thead>
 <tr>
 <th>Product</th>
 <th>Qty</th>
 <th>Amount</th>
 <th>Commission</th>
 </tr>
-</thead>
-<tbody id="orderTable"></tbody>
+<tbody id="table"></tbody>
 </table>
+
 </div>
 
 </div>
 
 <script>
+
+// IMAGE PREVIEW
+function loadImage(event){
+  let img = document.getElementById("preview");
+  img.src = URL.createObjectURL(event.target.files[0]);
+}
+
+// PROFILE SAVE
+function saveProfile(){
+  let name = document.getElementById("name").value;
+  let pos = document.getElementById("position").value;
+
+  document.getElementById("profileText").innerText =
+    name + " (" + pos + ")";
+}
+
+// ORDER SYSTEM
 let totalSales = 0;
 let totalCommission = 0;
 
-function addOrder() {
-  let product = document.getElementById("product").value;
-  let qty = parseInt(document.getElementById("qty").value);
+function addOrder(){
 
-  if(!qty) return alert("Enter quantity");
+  let p = document.getElementById("product").value;
+  let q = parseInt(document.getElementById("qty").value);
 
-  let price = 0;
-  let commission = 0;
+  if(!q) return alert("Enter qty");
 
-  if(product === "nutri") {
-    price = 1750;
-    commission = 400;
-  }
-  else if(product === "plant") {
-    price = 250;
-    commission = 8;
-  }
-  else if(product === "humate") {
-    price = 500;
-    commission = 50;
-  }
-  else if(product === "seaweed") {
-    price = 400;
-    commission = 50;
-  }
+  let price=0, comm=0;
 
-  let amount = price * qty;
-  let comm = commission * qty;
+  if(p=="nutri"){price=1750;comm=400;}
+  if(p=="plant"){price=250;comm=8;}
+  if(p=="humate"){price=500;comm=50;}
+  if(p=="seaweed"){price=400;comm=50;}
+
+  let amount = price*q;
+  let c = comm*q;
 
   totalSales += amount;
-  totalCommission += comm;
+  totalCommission += c;
 
   document.getElementById("sales").innerText = totalSales;
   document.getElementById("commission").innerText = totalCommission;
 
-  let row = `
-    <tr>
-      <td>${product}</td>
-      <td>${qty}</td>
-      <td>₹${amount}</td>
-      <td>₹${comm}</td>
-    </tr>
-  `;
-
-  document.getElementById("orderTable").innerHTML += row;
+  document.getElementById("table").innerHTML += `
+  <tr>
+    <td>${p}</td>
+    <td>${q}</td>
+    <td>₹${amount}</td>
+    <td>₹${c}</td>
+  </tr>`;
 }
 
-function saveProfile() {
-  let name = document.getElementById("staffName").value;
-  let position = document.getElementById("staffPosition").value;
-
-  document.getElementById("profileDisplay").innerText =
-    "Name: " + name + " | Position: " + position;
-}
 </script>
 
 </body>
