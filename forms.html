@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Forms</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+.box h3{
+margin-bottom:10px;
+}
+
+/* Button */
+button{
+padding:10px 15px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* iframe */
+iframe{
+width:100%;
+height:500px;
+border:none;
+border-radius:10px;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+<a href="forms.html">Forms</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">📋 Floraza Forms Center</div>
+
+<!-- Farmer Registration (File Upload → Button) -->
+
+<div class="box">
+<h3>👨‍🌾 Farmer Registration (Upload Documents)</h3>
+
+<a href="https://docs.google.com/forms/d/1BBbwFluTvuNPVrqR_5_kTGrYWFcSe3Ni3Ot1vRr6J-E/viewform" target="_blank">
+<button>Open Form</button>
+</a>
+
+</div>
+
+<!-- Farmer Details -->
+
+<div class="box">
+<h3>👨‍🌾 Farmer Details</h3>
+
+<iframe src="https://docs.google.com/forms/d/e/11lwgUjdr09mQE_gbJTIYN2vJxjHiClHsFojnIJ0eLQA/viewform"></iframe>
+
+</div>
+
+<!-- Plant / Farming -->
+
+<div class="box">
+<h3>🌱 Plant / Farming Form</h3>
+
+<iframe src="https://docs.google.com/forms/d/e/18sb63rUnDHd7DET5xavWIuRFyFA7Qyi2ucbKyjKncAE/viewform"></iframe>
+
+</div>
+
+<!-- Fertilizer -->
+
+<div class="box">
+<h3>🧪 Fertilizer / Input Form</h3>
+
+<iframe src="https://docs.google.com/forms/d/e/1-RRvIEuQdp6AgicjfgAXL-lgCTWKNiwqUyeHWCaMY-U/viewform"></iframe>
+
+</div>
+
+<!-- Sales -->
+
+<div class="box">
+<h3>💰 Sales Form</h3>
+
+<iframe src="https://docs.google.com/forms/d/e/1xX1zU6skIvv9y4tPxDdu56Rc81gP_1CJWUV7t1Mqol8/viewform"></iframe>
+
+</div>
+
+<!-- Staff -->
+
+<div class="box">
+<h3>👷 Staff / Marketing Form</h3>
+
+<iframe src="https://docs.google.com/forms/d/e/1Id3oulB6oZqd_8HX9Dq5tfLj-Nl6t_Q09mveVJPFlME/viewform"></iframe>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>
