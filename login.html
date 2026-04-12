@@ -6,126 +6,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Floraza Login</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #3f8f3f;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
-/* Login Box */
-.login-box {
-    background: #fff;
-    padding: 40px;
-    width: 350px;
-    border-radius: 10px;
-    text-align: center;
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#2e7d32,#66bb6a);
 }
 
-.login-box h2 {
-    color: #2e7d32;
-    margin-bottom: 20px;
+/* Login Card */
+.login-box{
+background:white;
+padding:40px;
+width:350px;
+border-radius:20px;
+box-shadow:0 15px 40px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.login-box h2{
+margin-bottom:20px;
+color:#2e7d32;
 }
 
 /* Inputs */
-select, input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+input,select{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
 }
 
 /* Button */
-button {
-    width: 100%;
-    padding: 12px;
-    background: #2e7d32;
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
+button{
+width:100%;
+padding:12px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+margin-top:10px;
 }
 
-button:hover {
-    background: #1b5e20;
+button:hover{
+background:#1b5e20;
 }
 
-/* Back link */
-.back-link {
-    margin-top: 15px;
-    display: block;
-    color: #2e7d32;
-    text-decoration: none;
+/* Error */
+.error{
+color:red;
+font-size:14px;
+margin-top:10px;
 }
 </style>
 
 </head>
+
 <body>
 
 <div class="login-box">
-    <h2>FLORAZA LOGIN</h2>
 
-```
-<!-- Role Selection -->
+<h2>🌱 Floraza Login</h2>
+
 <select id="role">
-    <option>Admin</option>
-    <option>Marketing</option>
-    <option>Farmer</option>
+<option value="admin">Admin</option>
+<option value="marketing">Marketing</option>
+<option value="farmer">Farmer</option>
 </select>
 
-<!-- Inputs -->
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
 
-<!-- Login Button -->
 <button onclick="loginUser()">Login</button>
 
-<!-- Back -->
-<a href="index.html" class="back-link">← Back to Website</a>
-```
+<p class="error" id="error"></p>
 
 </div>
 
 <script>
-function loginUser() {
-    let role = document.getElementById("role").value;
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
 
-    // Admin Login
-    if(role === "Admin") {
-        if(username === "admin" && password === "1234") {
-            window.location.href = "admin-dashboard.html";
-        } else {
-            alert("Invalid Admin Login");
-        }
-    }
-
-    // Marketing Login
-    else if(role === "Marketing") {
-        if(username === "marketing" && password === "1234") {
-            window.location.href = "marketing-dashboard.html";
-        } else {
-            alert("Invalid Marketing Login");
-        }
-    }
-
-    // Farmer Login
-    else {
-        if(username === "farmer" && password === "1234") {
-            window.location.href = "farmer-dashboard.html";
-        } else {
-            alert("Invalid Farmer Login");
-        }
-    }
+// Default user setup
+if(!localStorage.getItem("user")){
+localStorage.setItem("user", JSON.stringify({
+username:"admin",
+password:"admin123"
+}));
 }
+
+function loginUser(){
+
+let role=document.getElementById("role").value;
+let username=document.getElementById("username").value.trim();
+let password=document.getElementById("password").value.trim();
+
+let user=JSON.parse(localStorage.getItem("user"));
+
+// Validation
+if(username==="" || password===""){
+document.getElementById("error").innerText="Please fill all fields";
+return;
+}
+
+// Check login
+if(username===user.username && password===user.password){
+
+localStorage.setItem("loggedIn","true");
+localStorage.setItem("role",role);
+
+// Redirect
+if(role==="admin"){
+window.location.href="admin-dashboard.html";
+}
+else if(role==="marketing"){
+window.location.href="marketing-dashboard.html";
+}
+else{
+window.location.href="farmer-dashboard.html";
+}
+
+}else{
+document.getElementById("error").innerText="Invalid username or password";
+}
+
+}
+
 </script>
 
 </body>
