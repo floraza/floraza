@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza MLM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card p{
+font-size:22px;
+color:#2e7d32;
+font-weight:bold;
+}
+
+/* Box */
+.box{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="sales.html">Sales</a>
+<a href="mlm.html">MLM</a>
+<a href="reports.html">Reports</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">💸 MLM Commission System</div>
+
+<!-- Summary -->
+
+<div class="cards">
+<div class="card"><h3>Total Earnings</h3><p id="total">0</p></div>
+<div class="card"><h3>Direct Income</h3><p id="direct">0</p></div>
+<div class="card"><h3>Level 1</h3><p id="l1">0</p></div>
+<div class="card"><h3>Level 2</h3><p id="l2">0</p></div>
+<div class="card"><h3>Level 3</h3><p id="l3">0</p></div>
+<div class="card"><h3>Level 4</h3><p id="l4">0</p></div>
+<div class="card"><h3>Level 5</h3><p id="l5">0</p></div>
+</div>
+
+<!-- MLM Table -->
+
+<div class="box">
+<h3>Commission Records</h3>
+
+<table>
+<tr>
+<th>Level</th>
+<th>Member</th>
+<th>Product</th>
+<th>Amount</th>
+<th>Commission</th>
+</tr>
+
+<tbody id="table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+// Commission Structure
+const commissionMap = {
+1750: [400,200,100,50,25],
+250: [8,4,2,1,1],
+500: [50,25,10,5,5],
+400: [50,25,10,5,5]
+};
+
+let totals = [0,0,0,0,0];
+
+/* Load Sales Data */
+let sales = JSON.parse(localStorage.getItem("salesData")) || [];
+
+/* Process MLM */
+sales.forEach(sale => {
+
+let price = 0;
+
+if(sale.name.includes("Nutri")) price=1750;
+if(sale.name.includes("Plant")) price=250;
+if(sale.name.includes("Humate")) price=500;
+if(sale.name.includes("Seaweed")) price=400;
+
+let structure = commissionMap[price];
+
+for(let i=0;i<5;i++){
+
+let comm = structure[i] * sale.qty;
+
+totals[i] += comm;
+
+document.getElementById("table").innerHTML += `
+<tr>
+<td>Level ${i+1}</td>
+<td>Member ${i+1}</td>
+<td>${sale.name}</td>
+<td>₹${sale.amount}</td>
+<td>₹${comm}</td>
+</tr>
+`;
+
+}
+
+});
+
+/* Update UI */
+document.getElementById("direct").innerText = totals[0];
+document.getElementById("l1").innerText = totals[1];
+document.getElementById("l2").innerText = totals[2];
+document.getElementById("l3").innerText = totals[3];
+document.getElementById("l4").innerText = totals[4];
+document.getElementById("l5").innerText = totals[4];
+
+let total = totals.reduce((a,b)=>a+b,0);
+document.getElementById("total").innerText = total;
+
+</script>
+
+</body>
+</html>
