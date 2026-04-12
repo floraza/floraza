@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Farmers</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+/* Inputs */
+input{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">👨‍🌾 Farmer Management</div>
+
+<!-- Add Farmer -->
+
+<div class="box">
+<h3>Add Farmer</h3>
+
+<input id="fname" placeholder="Farmer Name">
+<input id="village" placeholder="Village / Location">
+<input id="area" type="number" placeholder="Area (Acres)">
+<input id="plants" type="number" placeholder="Number of Plants">
+
+<button onclick="addFarmer()">Add Farmer</button>
+
+</div>
+
+<!-- Summary -->
+
+<div class="cards">
+<div class="card"><h3>Total Farmers</h3><p id="totalFarmers">0</p></div>
+<div class="card"><h3>Total Area (Acres)</h3><p id="totalArea">0</p></div>
+<div class="card"><h3>Total Plants</h3><p id="totalPlants">0</p></div>
+</div>
+
+<!-- Table -->
+
+<div class="box">
+<h3>Farmer List</h3>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Village</th>
+<th>Area</th>
+<th>Plants</th>
+</tr>
+<tbody id="table"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+let farmers=[];
+let totalArea=0,totalPlants=0;
+
+/* Add Farmer */
+function addFarmer(){
+
+let name=document.getElementById("fname").value;
+let village=document.getElementById("village").value;
+let area=parseFloat(document.getElementById("area").value);
+let plants=parseInt(document.getElementById("plants").value);
+
+if(!name || !area || !plants){
+alert("Fill all fields");
+return;
+}
+
+farmers.push({name,village,area,plants});
+
+totalArea+=area;
+totalPlants+=plants;
+
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${name}</td>
+<td>${village}</td>
+<td>${area}</td>
+<td>${plants}</td>
+</tr>
+`;
+
+document.getElementById("totalFarmers").innerText=farmers.length;
+document.getElementById("totalArea").innerText=totalArea;
+document.getElementById("totalPlants").innerText=totalPlants;
+
+// Save
+localStorage.setItem("farmers",JSON.stringify(farmers));
+localStorage.setItem("area",totalArea);
+localStorage.setItem("plants",totalPlants);
+
+}
+
+/* Load Data */
+window.onload=function(){
+
+let f=JSON.parse(localStorage.getItem("farmers"))||[];
+let a=parseFloat(localStorage.getItem("area"))||0;
+let p=parseInt(localStorage.getItem("plants"))||0;
+
+farmers=f;
+totalArea=a;
+totalPlants=p;
+
+f.forEach(x=>{
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${x.name}</td>
+<td>${x.village}</td>
+<td>${x.area}</td>
+<td>${x.plants}</td>
+</tr>
+`;
+});
+
+document.getElementById("totalFarmers").innerText=f.length;
+document.getElementById("totalArea").innerText=a;
+document.getElementById("totalPlants").innerText=p;
+
+}
+
+</script>
+
+</body>
+</html>
