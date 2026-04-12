@@ -1,187 +1,208 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FLORAZA ORGANICS LTD</title>
+<title>Floraza - Agro Business Platform</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body { margin: 0; font-family: Arial; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
-/* HEADER */
-header {
-    background: #2e7d32;
-    color: white;
-    padding: 12px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+body{background:#f4f6f9;}
+
+/* Navbar */
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:#2e7d32;
+color:white;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: bold;
+.navbar h1{font-size:22px;}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin-left:20px;
+font-weight:500;
 }
 
-nav {
-    display: flex;
-    align-items: center;
+/* Hero */
+.hero{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:60px 40px;
+background:linear-gradient(135deg,#e8f5e9,#ffffff);
 }
 
-nav a {
-    color: white;
-    margin: 0 12px;
-    text-decoration: none;
-    font-weight: 600;
+.hero-text{
+max-width:500px;
 }
 
-.login-btn {
-    background: white;
-    color: #2e7d32;
-    padding: 6px 12px;
-    border-radius: 5px;
-    margin-left: 10px;
-    text-decoration: none;
+.hero-text h2{
+font-size:36px;
+color:#2e7d32;
+margin-bottom:20px;
 }
 
-/* HERO */
-.hero {
-    height: 85vh;
-    background: url('farmer.png') center/cover no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.hero-text p{
+font-size:16px;
+margin-bottom:20px;
 }
 
-.hero-text {
-    background: rgba(0,0,0,0.6);
-    padding: 20px 40px;
-    color: white;
-    font-size: 32px;
-    font-weight: bold;
-    border-radius: 10px;
+.hero-text button{
+padding:12px 20px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
 
-/* SECTION */
-.section {
-    padding: 50px;
-    text-align: center;
+/* Hero Image */
+.hero img{
+width:400px;
+border-radius:20px;
 }
 
-.section h2 {
-    color: #2e7d32;
+/* Section */
+.section{
+padding:50px 40px;
+text-align:center;
 }
 
-/* CARDS */
-.cards {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+.section h2{
+margin-bottom:30px;
+color:#2e7d32;
 }
 
-.card {
-    width: 250px;
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 10px;
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
 }
 
-/* CTA */
-.cta {
-    background: #2e7d32;
-    color: white;
-    padding: 40px;
-    text-align: center;
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-.cta button {
-    background: white;
-    color: #2e7d32;
-    padding: 10px 20px;
-    border: none;
-    margin-top: 10px;
-    cursor: pointer;
+.card h3{margin-bottom:10px;}
+.card p{font-size:14px;}
+
+/* Footer */
+.footer{
+background:#2e7d32;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:30px;
 }
 
-/* FOOTER */
-footer {
-    background: #1b5e20;
-    color: white;
-    text-align: center;
-    padding: 15px;
+/* Mobile */
+@media(max-width:768px){
+.hero{
+flex-direction:column;
+text-align:center;
+}
+.hero img{
+width:100%;
+margin-top:20px;
+}
 }
 </style>
+
 </head>
 
 <body>
 
-<header>
-    <div class="logo">FLORAZA ORGANICS LTD</div>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#products">Products & Services</a>
-        <a href="#media">Media & Insights</a>
-        <a href="#careers">Careers</a>
-        <a href="#contact">Contact</a>
-        <a href="login.html" class="login-btn">Login</a>
-    </nav>
-</header>
+<!-- Navbar -->
+
+<div class="navbar">
+<h1>🌱 Floraza</h1>
+
+<div>
+<a href="#">Home</a>
+<a href="#products">Products</a>
+<a href="#about">About</a>
+<a href="login.html">Login</a>
+</div>
+</div>
+
+<!-- Hero -->
 
 <div class="hero">
-    <div class="hero-text">
-        Fresh Jackfruit & Organic Agro Products
-    </div>
+
+<div class="hero-text">
+<h2>Empowering Farmers. Growing Future.</h2>
+<p>Floraza is building a smart agro ecosystem with jackfruit farming, Nutri Jack powder, and advanced farmer network systems.</p>
+
+<button onclick="window.location.href='login.html'">Get Started</button>
+
 </div>
 
-<div class="section">
-    <h2>About Us</h2>
-    <p>Floraza Organics Ltd is focused on sustainable farming, high-yield jackfruit cultivation, and premium organic products.</p>
+<img src="farmer.png" alt="Farmer">
+
 </div>
+
+<!-- Products -->
 
 <div class="section" id="products">
-    <h2>Products & Services</h2>
-    <div class="cards">
-        <div class="card">
-            <h3>Nutri Jack Powder</h3>
-            <p>High-value processed jackfruit product</p>
-        </div>
-        <div class="card">
-            <h3>Jackfruit Plants</h3>
-            <p>High-yield quality plants</p>
-        </div>
-        <div class="card">
-            <h3>Organic Fertilizers</h3>
-            <p>Potassium Humate & Seaweed Gel</p>
-        </div>
-    </div>
+
+<h2>Our Products</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>🥭 Nutri Jack Powder</h3>
+<p>Premium quality jackfruit powder for nutrition and export.</p>
 </div>
 
-<div class="section" id="media">
-    <h2>Media & Insights</h2>
-    <p>Latest farming techniques and company updates.</p>
+<div class="card">
+<h3>🌱 Jackfruit Plants</h3>
+<p>High yield jackfruit plants for commercial farming.</p>
 </div>
 
-<div class="section" id="careers">
-    <h2>Careers</h2>
-    <p>Join our growing network of farmers and marketing professionals.</p>
+<div class="card">
+<h3>🧪 Potassium Humate</h3>
+<p>Enhances soil fertility and plant growth.</p>
 </div>
 
-<div class="cta">
-    <h2>Start Your Journey With Floraza</h2>
-    <p>Become a farmer or marketing partner today</p>
-    <button onclick="location.href='login.html'">Join Now</button>
+<div class="card">
+<h3>🧪 Seaweed Gel</h3>
+<p>Organic growth booster for sustainable farming.</p>
 </div>
 
-<div class="section" id="contact">
-    <h2>Contact Us</h2>
-    <p>Email: info@floraza.com</p>
-    <p>Phone: +91 XXXXX XXXXX</p>
 </div>
 
-<footer>
-    <p>© 2026 FLORAZA ORGANICS LTD</p>
-</footer>
+</div>
+
+<!-- About -->
+
+<div class="section" id="about">
+
+<h2>About Floraza</h2>
+
+<p>
+Floraza is an innovative agro business platform focused on large-scale jackfruit farming, farmer empowerment, and global supply chain expansion. With advanced technology and strong farmer networks, we aim to transform agriculture into a profitable and scalable business.
+</p>
+
+</div>
+
+<!-- Footer -->
+
+<div class="footer">
+© 2026 Floraza | All Rights Reserved
+</div>
 
 </body>
 </html>
