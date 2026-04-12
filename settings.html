@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Settings</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Inputs */
+input{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
+
+.danger{
+background:red;
+}
+
+.info{
+margin-top:10px;
+color:#2e7d32;
+font-weight:500;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+<a href="inventory.html">Inventory</a>
+<a href="settings.html">Settings</a>
+<button onclick="logout()">Logout</button>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">⚙️ System Settings</div>
+
+<!-- Profile -->
+
+<div class="box">
+<h3>👤 Profile Settings</h3>
+
+<input id="name" placeholder="Name">
+<input id="role" placeholder="Role">
+
+<button onclick="saveProfile()">Save Profile</button>
+
+<p class="info" id="profile"></p>
+
+</div>
+
+<!-- Password -->
+
+<div class="box">
+<h3>🔐 Change Password</h3>
+
+<input type="password" id="oldPass" placeholder="Old Password">
+<input type="password" id="newPass" placeholder="New Password">
+<input type="password" id="confirmPass" placeholder="Confirm Password">
+
+<button onclick="changePassword()">Update Password</button>
+
+</div>
+
+<!-- System Reset -->
+
+<div class="box">
+<h3>⚠️ System Reset</h3>
+
+<p>This will clear ALL system data (sales, farmers, inventory, etc.)</p>
+
+<button class="danger" onclick="resetSystem()">Reset System</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+/* Profile */
+function saveProfile(){
+
+let name=document.getElementById("name").value;
+let role=document.getElementById("role").value;
+
+localStorage.setItem("name",name);
+localStorage.setItem("role",role);
+
+document.getElementById("profile").innerText =
+"Saved: " + name + " (" + role + ")";
+}
+
+/* Load Profile */
+window.onload=function(){
+
+let name=localStorage.getItem("name");
+let role=localStorage.getItem("role");
+
+if(name){
+document.getElementById("profile").innerText =
+name + " (" + role + ")";
+}
+
+}
+
+/* Change Password */
+function changePassword(){
+
+let old=document.getElementById("oldPass").value;
+let newp=document.getElementById("newPass").value;
+let con=document.getElementById("confirmPass").value;
+
+let user=JSON.parse(localStorage.getItem("user"));
+
+if(old!==user.password){
+alert("Wrong old password");
+return;
+}
+
+if(newp!==con){
+alert("Password mismatch");
+return;
+}
+
+user.password=newp;
+localStorage.setItem("user",JSON.stringify(user));
+
+alert("Password updated successfully");
+
+}
+
+/* Reset System */
+function resetSystem(){
+
+let confirmReset = confirm("Are you sure? This cannot be undone!");
+
+if(confirmReset){
+localStorage.clear();
+alert("System Reset Completed");
+window.location.href="login.html";
+}
+
+}
+
+/* Logout */
+function logout(){
+localStorage.removeItem("loggedIn");
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>
