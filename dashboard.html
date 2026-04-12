@@ -1,164 +1,274 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floraza Admin Dashboard</title>
+<title>Floraza Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #2e7d32;
-    color: white;
-    position: fixed;
-    padding: 20px;
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2 {
-    margin-bottom: 20px;
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
 }
 
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    margin: 10px 0;
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
 }
 
-/* Content */
-.content {
-    margin-left: 240px;
-    padding: 20px;
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
 }
 
 /* Cards */
-.card {
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
 }
 
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-button {
-    padding: 10px 20px;
-    background: #2e7d32;
-    color: white;
-    border: none;
-    cursor: pointer;
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+/* Inputs */
+input,select{
+padding:10px;margin:5px;width:200px;
 }
 
-/* Top bar */
-.topbar {
-    background: #f4f4f4;
-    padding: 10px;
-    text-align: right;
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
 }
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
 </style>
+
 </head>
 
 <body>
 
+<!-- Sidebar -->
+
 <div class="sidebar">
-    <h2>Floraza Admin</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Products</a>
-    <a href="#">Services</a>
-    <a href="#">Media</a>
-    <a href="#">Careers</a>
+<h2>🌱 Floraza</h2>
+<a href="#">Dashboard</a>
+<a href="#">Sales</a>
+<a href="#">Delivery</a>
+<a href="#">Settings</a>
+<button onclick="logout()">Logout</button>
 </div>
 
-<div class="content">
+<!-- Main -->
 
-    <div class="topbar">
-        <button onclick="logout()">Logout</button>
-    </div>
+<div class="main">
 
-    <h1>Welcome, Admin 👋</h1>
+<div class="header">Floraza Admin Dashboard</div>
 
-    <!-- ADD PRODUCT -->
-    <div class="card">
-        <h3>Add Product</h3>
-        <input type="text" id="productName" placeholder="Product Name">
-        <textarea id="productDesc" placeholder="Product Description"></textarea>
-        <button onclick="addProduct()">Add Product</button>
-    </div>
+<!-- Profile -->
 
-    <!-- ADD JOB -->
-    <div class="card">
-        <h3>Post Job</h3>
-        <input type="text" id="jobTitle" placeholder="Job Title">
-        <textarea id="jobDesc" placeholder="Job Description"></textarea>
-        <button onclick="addJob()">Post Job</button>
-    </div>
+<div class="box">
+<h3>👤 Profile</h3>
+<input id="name" placeholder="Name">
+<input id="role" placeholder="Role">
+<button onclick="saveProfile()">Save</button>
+<p id="profile"></p>
+</div>
 
-    <!-- DISPLAY DATA -->
-    <div class="card">
-        <h3>Saved Data (Temporary)</h3>
-        <div id="output"></div>
-    </div>
+<!-- Cards -->
+
+<div class="cards">
+<div class="card"><h3>💰 Sales</h3><p id="sales">0</p></div>
+<div class="card"><h3>💸 Commission</h3><p id="commission">0</p></div>
+</div>
+
+<!-- Sales -->
+
+<div class="box">
+<h3>📦 Add Sales</h3>
+
+<select id="product">
+<option value="1750">Nutri Jack</option>
+<option value="250">Plant</option>
+<option value="500">Humate</option>
+<option value="400">Seaweed</option>
+</select>
+
+<input type="number" id="qty" placeholder="Quantity">
+
+<button onclick="addSales()">Add</button>
+
+<table>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Amount</th>
+<th>Commission</th>
+</tr>
+<tbody id="table"></tbody>
+</table>
+
+</div>
+
+<!-- Delivery -->
+
+<div class="box">
+<h3>🚚 Delivery</h3>
+
+<input id="cust" placeholder="Customer">
+<input id="loc" placeholder="Location">
+
+<select id="status">
+<option>Pending</option>
+<option>Dispatched</option>
+<option>Delivered</option>
+</select>
+
+<button onclick="addDelivery()">Add</button>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Location</th>
+<th>Status</th>
+</tr>
+<tbody id="delivery"></tbody>
+</table>
+
+</div>
+
+<!-- Change Password -->
+
+<div class="box">
+<h3>🔐 Change Password</h3>
+
+<input type="password" id="oldPass" placeholder="Old Password">
+<input type="password" id="newPass" placeholder="New Password">
+<input type="password" id="confirmPass" placeholder="Confirm Password">
+
+<button onclick="changePassword()">Update</button>
+
+</div>
 
 </div>
 
 <script>
-let products = [];
-let jobs = [];
 
-function addProduct() {
-    let name = document.getElementById("productName").value;
-    let desc = document.getElementById("productDesc").value;
-
-    if(name === "" || desc === "") {
-        alert("Fill all fields");
-        return;
-    }
-
-    products.push({name, desc});
-    displayData();
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
 }
 
-function addJob() {
-    let title = document.getElementById("jobTitle").value;
-    let desc = document.getElementById("jobDesc").value;
+/* Profile */
+function saveProfile(){
+let n=document.getElementById("name").value;
+let r=document.getElementById("role").value;
 
-    if(title === "" || desc === "") {
-        alert("Fill all fields");
-        return;
-    }
+localStorage.setItem("name",n);
+localStorage.setItem("role",r);
 
-    jobs.push({title, desc});
-    displayData();
+document.getElementById("profile").innerText=n+" ("+r+")";
 }
 
-function displayData() {
-    let output = "<h4>Products:</h4>";
-    products.forEach(p => {
-        output += "<p><b>" + p.name + "</b> - " + p.desc + "</p>";
-    });
+/* Sales */
+let totalSales=0,totalCommission=0;
 
-    output += "<h4>Jobs:</h4>";
-    jobs.forEach(j => {
-        output += "<p><b>" + j.title + "</b> - " + j.desc + "</p>";
-    });
+function addSales(){
 
-    document.getElementById("output").innerHTML = output;
+let p=document.getElementById("product").value;
+let text=document.getElementById("product").selectedOptions[0].text;
+let q=parseInt(document.getElementById("qty").value);
+
+if(!q)return alert("Enter qty");
+
+let amount=p*q;
+let comm=0;
+
+if(p==1750)comm=400*q;
+if(p==250)comm=8*q;
+if(p==500)comm=50*q;
+if(p==400)comm=50*q;
+
+totalSales+=amount;
+totalCommission+=comm;
+
+document.getElementById("sales").innerText=totalSales;
+document.getElementById("commission").innerText=totalCommission;
+
+document.getElementById("table").innerHTML+=`
+<tr><td>${text}</td><td>${q}</td><td>₹${amount}</td><td>₹${comm}</td></tr>`;
 }
 
-function logout() {
-    window.location.href = "admin.html";
+/* Delivery */
+function addDelivery(){
+
+let name=document.getElementById("cust").value;
+let loc=document.getElementById("loc").value;
+let status=document.getElementById("status").value;
+
+document.getElementById("delivery").innerHTML+=`
+<tr><td>${name}</td><td>${loc}</td><td>${status}</td></tr>`;
 }
+
+/* Password */
+function changePassword(){
+
+let old=document.getElementById("oldPass").value;
+let newp=document.getElementById("newPass").value;
+let con=document.getElementById("confirmPass").value;
+
+let user=JSON.parse(localStorage.getItem("user"));
+
+if(old!==user.password){alert("Wrong password");return;}
+if(newp!==con){alert("Mismatch");return;}
+
+user.password=newp;
+localStorage.setItem("user",JSON.stringify(user));
+
+alert("Updated");
+}
+
+/* Logout */
+function logout(){
+localStorage.removeItem("loggedIn");
+window.location.href="login.html";
+}
+
 </script>
 
 </body>
