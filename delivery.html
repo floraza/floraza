@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Delivery</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+/* Inputs */
+input,select{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">🚚 Delivery Management</div>
+
+<!-- Add Delivery -->
+
+<div class="box">
+<h3>Add Delivery</h3>
+
+<input id="cust" placeholder="Customer Name">
+<input id="loc" placeholder="Location">
+
+<select id="product">
+<option>Nutri Jack Powder</option>
+<option>Jackfruit Plant</option>
+<option>Potassium Humate</option>
+<option>Seaweed Gel</option>
+</select>
+
+<input type="number" id="qty" placeholder="Quantity">
+
+<select id="status">
+<option>Pending</option>
+<option>Dispatched</option>
+<option>Delivered</option>
+</select>
+
+<button onclick="addDelivery()">Add Delivery</button>
+
+</div>
+
+<!-- Summary -->
+
+<div class="cards">
+<div class="card"><h3>Total Orders</h3><p id="totalOrders">0</p></div>
+<div class="card"><h3>Delivered</h3><p id="delivered">0</p></div>
+</div>
+
+<!-- Table -->
+
+<div class="box">
+<h3>Delivery Records</h3>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Location</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Status</th>
+</tr>
+
+<tbody id="table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+let deliveries=[];
+let totalOrders=0;
+let deliveredCount=0;
+
+/* Add Delivery */
+function addDelivery(){
+
+let name=document.getElementById("cust").value;
+let loc=document.getElementById("loc").value;
+let product=document.getElementById("product").value;
+let qty=parseInt(document.getElementById("qty").value);
+let status=document.getElementById("status").value;
+
+if(!name || !qty){
+alert("Fill all fields");
+return;
+}
+
+deliveries.push({name,loc,product,qty,status});
+totalOrders++;
+
+if(status==="Delivered") deliveredCount++;
+
+// Update UI
+document.getElementById("totalOrders").innerText=totalOrders;
+document.getElementById("delivered").innerText=deliveredCount;
+
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${name}</td>
+<td>${loc}</td>
+<td>${product}</td>
+<td>${qty}</td>
+<td>${status}</td>
+</tr>
+`;
+
+// Save
+localStorage.setItem("deliveryData",JSON.stringify(deliveries));
+localStorage.setItem("ordersTotal",totalOrders);
+localStorage.setItem("deliveredTotal",deliveredCount);
+
+}
+
+/* Load Data */
+window.onload=function(){
+
+let d=JSON.parse(localStorage.getItem("deliveryData"))||[];
+let t=parseInt(localStorage.getItem("ordersTotal"))||0;
+let dc=parseInt(localStorage.getItem("deliveredTotal"))||0;
+
+deliveries=d;
+totalOrders=t;
+deliveredCount=dc;
+
+d.forEach(x=>{
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${x.name}</td>
+<td>${x.loc}</td>
+<td>${x.product}</td>
+<td>${x.qty}</td>
+<td>${x.status}</td>
+</tr>
+`;
+});
+
+document.getElementById("totalOrders").innerText=t;
+document.getElementById("delivered").innerText=dc;
+
+}
+
+</script>
+
+</body>
+</html>
