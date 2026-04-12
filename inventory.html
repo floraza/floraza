@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Inventory</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+/* Inputs */
+input,select{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+.low{color:red;font-weight:bold;}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+<a href="inventory.html">Inventory</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">📦 Inventory Management</div>
+
+<!-- Add Stock -->
+
+<div class="box">
+<h3>Add / Update Stock</h3>
+
+<select id="product">
+<option>Nutri Jack Powder</option>
+<option>Jackfruit Plant</option>
+<option>Potassium Humate</option>
+<option>Seaweed Gel</option>
+</select>
+
+<select id="warehouse">
+<option>Biraldinni Factory</option>
+<option>Dubai Hub</option>
+</select>
+
+<input type="number" id="qty" placeholder="Quantity (kg / units)">
+
+<select id="type">
+<option value="add">Stock In</option>
+<option value="remove">Stock Out</option>
+</select>
+
+<button onclick="updateStock()">Submit</button>
+
+</div>
+
+<!-- Summary -->
+
+<div class="cards">
+<div class="card"><h3>Total Items</h3><p id="items">0</p></div>
+<div class="card"><h3>Total Quantity</h3><p id="totalQty">0</p></div>
+</div>
+
+<!-- Table -->
+
+<div class="box">
+<h3>Inventory Records</h3>
+
+<table>
+<tr>
+<th>Product</th>
+<th>Warehouse</th>
+<th>Quantity</th>
+<th>Status</th>
+</tr>
+
+<tbody id="table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+let totalQty = 0;
+
+/* Update Stock */
+function updateStock(){
+
+let product=document.getElementById("product").value;
+let warehouse=document.getElementById("warehouse").value;
+let qty=parseInt(document.getElementById("qty").value);
+let type=document.getElementById("type").value;
+
+if(!qty){
+alert("Enter quantity");
+return;
+}
+
+let key = product + "_" + warehouse;
+
+if(!inventory[key]) inventory[key] = 0;
+
+if(type==="add"){
+inventory[key] += qty;
+}else{
+inventory[key] -= qty;
+if(inventory[key] < 0) inventory[key] = 0;
+}
+
+saveInventory();
+renderTable();
+
+}
+
+/* Save */
+function saveInventory(){
+localStorage.setItem("inventory", JSON.stringify(inventory));
+}
+
+/* Render */
+function renderTable(){
+
+let table=document.getElementById("table");
+table.innerHTML="";
+
+totalQty = 0;
+let count = 0;
+
+for(let key in inventory){
+
+let parts = key.split("_");
+let product = parts[0];
+let warehouse = parts[1];
+let qty = inventory[key];
+
+totalQty += qty;
+count++;
+
+let status = qty < 50 ? "Low Stock ⚠️" : "Available";
+
+table.innerHTML += `
+<tr>
+<td>${product}</td>
+<td>${warehouse}</td>
+<td class="${qty<50?'low':''}">${qty}</td>
+<td>${status}</td>
+</tr>
+`;
+
+}
+
+document.getElementById("items").innerText = count;
+document.getElementById("totalQty").innerText = totalQty;
+
+}
+
+/* Load */
+window.onload=function(){
+renderTable();
+}
+
+</script>
+
+</body>
+</html>
