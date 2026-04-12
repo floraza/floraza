@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Sales</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:230px;height:100vh;background:#2e7d32;
+color:white;padding:20px;position:fixed;
+}
+
+.sidebar h2{margin-bottom:20px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;
+margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:250px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;
+border-radius:10px;text-align:center;
+margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* Cards */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;padding:20px;border-radius:15px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+/* Inputs */
+input,select{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+<h2>🌱 Floraza</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="farmers.html">Farmers</a>
+<a href="sales.html">Sales</a>
+<a href="delivery.html">Delivery</a>
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">💰 Sales Management</div>
+
+<!-- Add Sale -->
+
+<div class="box">
+<h3>Add Sale</h3>
+
+<select id="product">
+<option value="1750">Nutri Jack Powder</option>
+<option value="250">Jackfruit Plant</option>
+<option value="500">Potassium Humate</option>
+<option value="400">Seaweed Gel</option>
+</select>
+
+<input type="number" id="qty" placeholder="Quantity">
+
+<button onclick="addSale()">Add Sale</button>
+
+</div>
+
+<!-- Summary -->
+
+<div class="cards">
+<div class="card"><h3>Total Sales ₹</h3><p id="totalSales">0</p></div>
+<div class="card"><h3>Total Commission ₹</h3><p id="totalCommission">0</p></div>
+</div>
+
+<!-- Table -->
+
+<div class="box">
+<h3>Sales Records</h3>
+
+<table>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Amount</th>
+<th>Commission</th>
+</tr>
+
+<tbody id="table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+let sales=[];
+let totalSales=0;
+let totalCommission=0;
+
+/* Add Sale */
+function addSale(){
+
+let price=parseInt(document.getElementById("product").value);
+let name=document.getElementById("product").selectedOptions[0].text;
+let qty=parseInt(document.getElementById("qty").value);
+
+if(!qty){
+alert("Enter quantity");
+return;
+}
+
+let amount=price*qty;
+let commission=0;
+
+// MLM Commission (Direct Level)
+if(price==1750) commission=400*qty;
+if(price==250) commission=8*qty;
+if(price==500) commission=50*qty;
+if(price==400) commission=50*qty;
+
+sales.push({name,qty,amount,commission});
+
+totalSales+=amount;
+totalCommission+=commission;
+
+// Update UI
+document.getElementById("totalSales").innerText=totalSales;
+document.getElementById("totalCommission").innerText=totalCommission;
+
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${name}</td>
+<td>${qty}</td>
+<td>₹${amount}</td>
+<td>₹${commission}</td>
+</tr>
+`;
+
+// Save
+localStorage.setItem("salesData",JSON.stringify(sales));
+localStorage.setItem("salesTotal",totalSales);
+localStorage.setItem("commissionTotal",totalCommission);
+
+}
+
+/* Load Data */
+window.onload=function(){
+
+let s=JSON.parse(localStorage.getItem("salesData"))||[];
+let ts=parseInt(localStorage.getItem("salesTotal"))||0;
+let tc=parseInt(localStorage.getItem("commissionTotal"))||0;
+
+sales=s;
+totalSales=ts;
+totalCommission=tc;
+
+s.forEach(x=>{
+document.getElementById("table").innerHTML+=`
+<tr>
+<td>${x.name}</td>
+<td>${x.qty}</td>
+<td>₹${x.amount}</td>
+<td>₹${x.commission}</td>
+</tr>
+`;
+});
+
+document.getElementById("totalSales").innerText=ts;
+document.getElementById("totalCommission").innerText=tc;
+
+}
+
+</script>
+
+</body>
+</html>
