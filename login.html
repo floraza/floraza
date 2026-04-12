@@ -14,80 +14,63 @@
 body{
 height:100vh;
 display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#1b5e20,#66bb6a);
-}
-
-/* Container */
-.container{
-display:flex;
-background:white;
-border-radius:20px;
-overflow:hidden;
-box-shadow:0 20px 50px rgba(0,0,0,0.2);
-width:800px;
-max-width:95%;
+background:linear-gradient(135deg,#2e7d32,#66bb6a);
 }
 
 /* Left */
 .left{
 flex:1;
-background:linear-gradient(135deg,#2e7d32,#81c784);
-color:white;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-padding:40px;
-text-align:center;
+color:white;
 }
 
-.left h1{
-font-size:28px;
-margin-bottom:15px;
-}
-
-.left p{
-font-size:14px;
-}
+.left h1{font-size:40px;margin-bottom:10px;}
+.left p{opacity:0.9;}
 
 /* Right */
 .right{
 flex:1;
-padding:40px;
+background:white;
 display:flex;
-flex-direction:column;
 justify-content:center;
+align-items:center;
+border-radius:30px 0 0 30px;
 }
 
-/* Form */
-.right h2{
+/* Card */
+.card{
+width:350px;
+}
+
+.card h2{
+text-align:center;
 margin-bottom:20px;
 color:#2e7d32;
 }
 
-input,select{
+/* Inputs */
+select,input{
 width:100%;
 padding:12px;
 margin:10px 0;
-border-radius:8px;
+border-radius:10px;
 border:1px solid #ccc;
 }
 
-/* Password wrapper */
-.password-box{
+/* Password */
+.pass{
 position:relative;
 }
 
-.password-box span{
+.pass span{
 position:absolute;
 right:10px;
 top:50%;
 transform:translateY(-50%);
 cursor:pointer;
-font-size:14px;
-color:#2e7d32;
 }
 
 /* Button */
@@ -97,142 +80,108 @@ padding:12px;
 background:#2e7d32;
 color:white;
 border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
+border-radius:10px;
 margin-top:10px;
-}
-
-button:hover{
-background:#1b5e20;
+cursor:pointer;
+font-size:16px;
 }
 
 /* Error */
-.error{
+#error{
 color:red;
-font-size:13px;
+text-align:center;
 margin-top:10px;
 }
 
-/* Footer link */
-.link{
-margin-top:15px;
-font-size:13px;
+/* Link */
+.back{
 text-align:center;
-}
-
-.link a{
+margin-top:10px;
+display:block;
 color:#2e7d32;
 text-decoration:none;
 }
 
-/* Mobile */
-@media(max-width:768px){
-.container{
-flex-direction:column;
-}
-.left{
-padding:20px;
-}
-}
 </style>
 
 </head>
 
 <body>
 
-<div class="container">
-
-<!-- LEFT -->
+<!-- Left -->
 
 <div class="left">
 <h1>🌱 Floraza</h1>
 <p>Empowering Farmers. Growing Future.</p>
 </div>
 
-<!-- RIGHT -->
+<!-- Right -->
 
 <div class="right">
+<div class="card">
 
 <h2>Login</h2>
 
 <select id="role">
-<option value="admin">Admin</option>
-<option value="marketing">Marketing</option>
-<option value="farmer">Farmer</option>
+<option>Admin</option>
+<option>Marketing</option>
 </select>
 
-<input type="text" id="username" placeholder="Username">
+<input id="username" placeholder="Username">
 
-<div class="password-box">
+<div class="pass">
 <input type="password" id="password" placeholder="Password">
-<span onclick="togglePassword()">👁</span>
+<span onclick="togglePass()">👁️</span>
 </div>
 
-<button onclick="loginUser()">Login</button>
+<button onclick="login()">Login</button>
 
-<p class="error" id="error"></p>
+<p id="error"></p>
 
-<div class="link">
-<a href="index.html">← Back to Home</a>
-</div>
+<a href="index.html" class="back">← Back to Home</a>
 
 </div>
-
 </div>
 
 <script>
 
-// Default user
-if(!localStorage.getItem("user")){
-localStorage.setItem("user", JSON.stringify({
-username:"admin",
-password:"admin123"
-}));
+/* AUTO CREATE USERS */
+if(!localStorage.getItem("users")){
+localStorage.setItem("users", JSON.stringify([
+{username:"admin", password:"1234", role:"Admin"},
+{username:"marketing", password:"1234", role:"Marketing"}
+]));
 }
 
-// Toggle password
-function togglePassword(){
-let pass=document.getElementById("password");
-pass.type = pass.type === "password" ? "text" : "password";
-}
-
-// Login function
-function loginUser(){
+/* LOGIN */
+function login(){
 
 let role=document.getElementById("role").value;
 let username=document.getElementById("username").value.trim();
 let password=document.getElementById("password").value.trim();
 
-let user=JSON.parse(localStorage.getItem("user"));
+let users=JSON.parse(localStorage.getItem("users"));
 
-// Validation
-if(username==="" || password===""){
-document.getElementById("error").innerText="Please fill all fields";
-return;
-}
+let user=users.find(u =>
+u.username===username &&
+u.password===password &&
+u.role===role
+);
 
-// Check login
-if(username===user.username && password===user.password){
-
+if(user){
 localStorage.setItem("loggedIn","true");
-localStorage.setItem("role",role);
-
-// Redirect
-if(role==="admin"){
-window.location.href="admin-dashboard.html";
-}
-else if(role==="marketing"){
-window.location.href="marketing-dashboard.html";
-}
-else{
-window.location.href="farmer-dashboard.html";
-}
-
+localStorage.setItem("currentUser", JSON.stringify(user));
+window.location.href="dashboard.html";
 }else{
 document.getElementById("error").innerText="Invalid username or password";
 }
 
+}
+
+/* SHOW PASSWORD */
+function togglePass(){
+let pass=document.getElementById("password");
+pass.type = pass.type==="password" ? "text" : "password";
 }
 
 </script>
