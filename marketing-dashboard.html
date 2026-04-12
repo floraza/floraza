@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,212 +9,225 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
 body {
-    background: linear-gradient(135deg, #e8f5e9, #ffffff);
+    background: linear-gradient(135deg,#e8f5e9,#ffffff);
 }
 
 /* Sidebar */
 .sidebar {
-    width: 230px;
-    height: 100vh;
-    position: fixed;
-    background: #2e7d32;
-    color: white;
-    padding: 20px;
+    width:230px;height:100vh;position:fixed;
+    background:#2e7d32;color:white;padding:20px;
 }
 
-.sidebar h2 {
-    margin-bottom: 30px;
-}
+.sidebar h2 {margin-bottom:30px;}
 
 .sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 8px;
+    display:block;color:white;text-decoration:none;
+    padding:10px;margin:10px 0;border-radius:8px;
 }
 
-.sidebar a:hover {
-    background: #1b5e20;
-}
+.sidebar a:hover {background:#1b5e20;}
 
 /* Main */
-.main {
-    margin-left: 250px;
-    padding: 20px;
-}
+.main {margin-left:250px;padding:20px;}
 
 /* Header */
 .header {
-    background: #388e3c;
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 22px;
-    margin-bottom: 20px;
+    background:#388e3c;color:white;padding:15px;
+    border-radius:10px;text-align:center;
+    font-size:22px;margin-bottom:20px;
 }
 
-/* Profile Card */
-.profile {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-}
-
-.profile input {
-    padding: 10px;
-    margin: 5px;
-    width: 200px;
-}
-
-.profile button {
-    padding: 10px 15px;
-    background: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 8px;
+/* Card */
+.box {
+    background:white;padding:20px;border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    margin-bottom:20px;
 }
 
 /* Cards */
 .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
 }
 
 .card {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    transition: 0.3s;
+    background:white;padding:20px;border-radius:15px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-.card:hover {
-    transform: translateY(-5px);
+.card h3 {margin-bottom:10px;}
+.card p {font-size:22px;color:#2e7d32;font-weight:bold;}
+
+input,select {
+    padding:10px;margin:5px;width:200px;
 }
 
-.card h3 {
-    margin-bottom: 10px;
+button {
+    padding:10px 15px;background:#2e7d32;
+    color:white;border:none;border-radius:8px;
+    cursor:pointer;
 }
 
-.card p {
-    font-size: 24px;
-    font-weight: bold;
-    color: #2e7d32;
+/* Table */
+table {
+    width:100%;margin-top:10px;border-collapse:collapse;
 }
+th {background:#2e7d32;color:white;}
+th,td {padding:10px;border:1px solid #ddd;text-align:center;}
 
-/* Mobile */
 @media(max-width:768px){
-    .sidebar {
-        display: none;
-    }
-    .main {
-        margin-left: 0;
-    }
+.sidebar{display:none;}
+.main{margin-left:0;}
 }
 </style>
+
 </head>
 
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
-    <h2>🌱 Floraza</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Farmers</a>
-    <a href="#">Plants</a>
-    <a href="#">Sales</a>
-    <a href="#">Employees</a>
+<h2>🌱 Floraza</h2>
+<a>Dashboard</a>
+<a>Farmers</a>
+<a>Sales</a>
+<a>Reports</a>
 </div>
 
-<!-- Main -->
 <div class="main">
 
-    <div class="header">
-        Floraza Marketing Dashboard
-    </div>
+<div class="header">Floraza Marketing Dashboard</div>
 
-    <!-- Profile -->
-    <div class="profile">
-        <input type="text" id="name" placeholder="Name">
-        <input type="text" id="position" placeholder="Position">
-        <button onclick="saveProfile()">Save</button>
+<!-- PROFILE -->
 
-        <p id="display"></p>
-    </div>
+<div class="box">
+<h3>Profile</h3>
+<input id="name" placeholder="Name">
+<input id="role" placeholder="Role">
+<button onclick="saveProfile()">Save</button>
+<p id="profile"></p>
+</div>
 
-    <!-- Cards -->
-    <div class="cards">
-        <div class="card">
-            <h3>👨‍🌾 Total Farmers</h3>
-            <p id="farmers">0</p>
-        </div>
+<!-- SALES INPUT -->
 
-        <div class="card">
-            <h3>🌱 Total Plants</h3>
-            <p id="plants">0</p>
-        </div>
+<div class="box">
+<h3>Add Sales</h3>
 
-        <div class="card">
-            <h3>🌍 Total Area</h3>
-            <p id="area">0</p>
-        </div>
+<select id="product">
+<option value="1750">Nutri Jack Powder</option>
+<option value="250">Jackfruit Plant</option>
+<option value="500">Potassium Humate</option>
+<option value="400">Seaweed Gel</option>
+</select>
 
-        <div class="card">
-            <h3>💰 Sales ₹</h3>
-            <p id="sales">0</p>
-        </div>
+<input type="number" id="qty" placeholder="Quantity">
+<button onclick="addSales()">Add Sale</button>
 
-        <div class="card">
-            <h3>📦 Fertilizer</h3>
-            <p id="fertilizer">0</p>
-        </div>
+<table>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Amount</th>
+<th>Commission</th>
+</tr>
+<tbody id="table"></tbody>
+</table>
 
-        <div class="card">
-            <h3>💸 Commission ₹</h3>
-            <p id="commission">0</p>
-        </div>
-    </div>
+</div>
+
+<!-- CARDS -->
+
+<div class="cards">
+
+<div class="card">
+<h3>💰 Total Sales</h3>
+<p id="sales">0</p>
+</div>
+
+<div class="card">
+<h3>💸 Commission</h3>
+<p id="commission">0</p>
+</div>
+
+</div>
 
 </div>
 
 <script>
 
-/* Save Profile */
-function saveProfile() {
-    let name = document.getElementById("name").value;
-    let position = document.getElementById("position").value;
+let totalSales = 0;
+let totalCommission = 0;
 
-    localStorage.setItem("name", name);
-    localStorage.setItem("position", position);
+/* PROFILE SAVE */
+function saveProfile(){
+let name = document.getElementById("name").value;
+let role = document.getElementById("role").value;
 
-    document.getElementById("display").innerHTML =
-        "Name: " + name + " | Position: " + position;
+localStorage.setItem("name",name);
+localStorage.setItem("role",role);
+
+document.getElementById("profile").innerText =
+name + " (" + role + ")";
 }
 
-/* Load Profile */
-window.onload = function() {
-    let name = localStorage.getItem("name");
-    let position = localStorage.getItem("position");
+/* ADD SALES */
+function addSales(){
 
-    if(name){
-        document.getElementById("display").innerHTML =
-            "Name: " + name + " | Position: " + position;
-    }
+let productText = document.getElementById("product").selectedOptions[0].text;
+let price = parseInt(document.getElementById("product").value);
+let qty = parseInt(document.getElementById("qty").value);
+
+if(!qty){alert("Enter quantity");return;}
+
+let amount = price * qty;
+
+let comm = 0;
+if(price==1750) comm = 400*qty;
+if(price==250) comm = 8*qty;
+if(price==500) comm = 50*qty;
+if(price==400) comm = 50*qty;
+
+totalSales += amount;
+totalCommission += comm;
+
+document.getElementById("sales").innerText = totalSales;
+document.getElementById("commission").innerText = totalCommission;
+
+document.getElementById("table").innerHTML += `
+<tr>
+<td>${productText}</td>
+<td>${qty}</td>
+<td>₹${amount}</td>
+<td>₹${comm}</td>
+</tr>`;
+
+// SAVE
+localStorage.setItem("sales",totalSales);
+localStorage.setItem("commission",totalCommission);
+localStorage.setItem("table",document.getElementById("table").innerHTML);
+}
+
+/* LOAD DATA */
+window.onload = function(){
+
+let s = localStorage.getItem("sales");
+let c = localStorage.getItem("commission");
+let t = localStorage.getItem("table");
+let name = localStorage.getItem("name");
+let role = localStorage.getItem("role");
+
+if(s){totalSales=s;document.getElementById("sales").innerText=s;}
+if(c){totalCommission=c;document.getElementById("commission").innerText=c;}
+if(t){document.getElementById("table").innerHTML=t;}
+if(name){
+document.getElementById("profile").innerText =
+name + " (" + role + ")";
+}
+
 }
 
 </script>
