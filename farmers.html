@@ -10,43 +10,36 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-
-.logo-box{
-display:flex;align-items:center;gap:10px;margin-bottom:20px;
-}
-
+.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
 
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
-
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
-.main{
-margin-left:260px;padding:20px;width:100%;
-}
+.main{margin-left:260px;padding:20px;width:100%;}
 
 /* Header */
 .header{
 background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
-/* Form */
+/* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
 }
 
+/* Inputs */
 input,select{
 padding:10px;margin:5px;width:200px;
 }
@@ -60,6 +53,8 @@ padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;c
 table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+
+img{border-radius:50%;}
 </style>
 
 </head>
@@ -69,12 +64,13 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
+
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -82,7 +78,9 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <div class="main">
 
-<div class="header">👨‍🌾 Farmer Management</div>
+<div class="header">
+👨‍🌾 Farmer Management
+</div>
 
 <!-- Form -->
 
@@ -96,6 +94,8 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <select id="staff"></select>
 
+<input type="file" id="photo" accept="image/*">
+
 <button onclick="addFarmer()">Add Farmer</button>
 
 </div>
@@ -106,7 +106,8 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <table>
 <tr>
-<th>Farmer ID</th>
+<th>ID</th>
+<th>Photo</th>
 <th>Name</th>
 <th>Phone</th>
 <th>Location</th>
@@ -125,48 +126,86 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <script>
 
-/* PROTECT */
+/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* GENERATE FARMER ID */
+/* Farmer ID Generator */
 function generateFarmerID(){
 
 let last = localStorage.getItem("farmerCounter") || 0;
-
 last = parseInt(last) + 1;
-
 localStorage.setItem("farmerCounter", last);
 
 return "FRM" + String(last).padStart(5,'0');
 }
 
-/* LOAD STAFF */
+/* Load Staff */
 let staffList = JSON.parse(localStorage.getItem("staff")) || [];
 
-let staffDropdown = document.getElementById("staff");
-
-if(staffList.length === 0){
-staffDropdown.innerHTML = "<option>No Staff</option>";
-}else{
 staffList.forEach(s=>{
-staffDropdown.innerHTML += `<option value="${s.username}">${s.username}</option>`;
+document.getElementById("staff").innerHTML +=
+`<option>${s.username}</option>`;
 });
-}
 
-/* LOAD FARMERS */
+/* Data */
 let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 
-function loadFarmers(){
+/* Add Farmer */
+function addFarmer(){
+
+let file = document.getElementById("photo").files[0];
+
+if(!file){
+alert("Upload photo");
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let farmer = {
+id: generateFarmerID(),
+name: document.getElementById("name").value,
+phone: document.getElementById("phone").value,
+location: document.getElementById("location").value,
+acres: document.getElementById("acres").value,
+plants: document.getElementById("plants").value,
+staff: document.getElementById("staff").value,
+photo: reader.result
+};
+
+farmers.push(farmer);
+
+localStorage.setItem("farmers", JSON.stringify(farmers));
+
+load();
+
+/* Clear */
+document.getElementById("name").value="";
+document.getElementById("phone").value="";
+document.getElementById("location").value="";
+document.getElementById("acres").value="";
+document.getElementById("plants").value="";
+};
+
+reader.readAsDataURL(file);
+
+}
+
+/* Load */
+function load(){
 
 let table = document.getElementById("table");
 table.innerHTML="";
 
 farmers.forEach(f=>{
-table.innerHTML += `
+table.innerHTML+=`
 <tr>
 <td>${f.id}</td>
+<td><img src="${f.photo}" width="40"></td>
 <td>${f.name}</td>
 <td>${f.phone}</td>
 <td>${f.location}</td>
@@ -179,49 +218,7 @@ table.innerHTML += `
 
 }
 
-loadFarmers();
-
-/* ADD FARMER */
-function addFarmer(){
-
-let name = document.getElementById("name").value;
-let phone = document.getElementById("phone").value;
-let location = document.getElementById("location").value;
-let acres = document.getElementById("acres").value;
-let plants = document.getElementById("plants").value;
-let staff = document.getElementById("staff").value;
-
-if(!name || !phone){
-alert("Fill required fields");
-return;
-}
-
-/* AUTO ID */
-let farmerId = generateFarmerID();
-
-let farmer = {
-id: farmerId,
-name,
-phone,
-location,
-acres,
-plants,
-staff
-};
-
-farmers.push(farmer);
-
-localStorage.setItem("farmers", JSON.stringify(farmers));
-
-loadFarmers();
-
-/* CLEAR */
-document.getElementById("name").value="";
-document.getElementById("phone").value="";
-document.getElementById("location").value="";
-document.getElementById("acres").value="";
-document.getElementById("plants").value="";
-}
+load();
 
 </script>
 
