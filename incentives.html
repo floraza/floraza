@@ -4,59 +4,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floraza MLM</title>
+<title>Floraza Performance Incentives</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
-/* Sidebar */
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.logo-box{
-display:flex;align-items:center;gap:10px;margin-bottom:20px;
-}
-
+.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
 
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
-
 .sidebar a:hover{background:#1b5e20;}
 
-/* Main */
 .main{margin-left:260px;padding:20px;width:100%;}
 
-/* Header */
 .header{
 background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
-/* Cards */
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-gap:15px;
-margin-bottom:20px;
+gap:15px;margin-bottom:20px;
 }
 
 .card{
-background:white;padding:20px;border-radius:15px;
-text-align:center;
+background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
 
-.card p{
-font-size:18px;color:#2e7d32;font-weight:bold;
-}
-
-/* Table */
 .box{
 background:white;padding:20px;border-radius:15px;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
@@ -71,106 +55,81 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <body>
 
-<!-- Sidebar -->
-
 <div class="sidebar">
-
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
-
-<!-- Main -->
 
 <div class="main">
 
-<div class="header">
-💸 MLM Commission System
-</div>
-
-<!-- Cards -->
+<div class="header">💸 Performance Incentives</div>
 
 <div class="cards">
 <div class="card"><h4>Total</h4><p id="total">0</p></div>
-<div class="card"><h4>Level 1</h4><p id="l1">0</p></div>
-<div class="card"><h4>Level 2</h4><p id="l2">0</p></div>
-<div class="card"><h4>Level 3</h4><p id="l3">0</p></div>
-<div class="card"><h4>Level 4</h4><p id="l4">0</p></div>
-<div class="card"><h4>Level 5</h4><p id="l5">0</p></div>
+<div class="card"><h4>Tier 1</h4><p id="t1">0</p></div>
+<div class="card"><h4>Tier 2</h4><p id="t2">0</p></div>
+<div class="card"><h4>Tier 3</h4><p id="t3">0</p></div>
+<div class="card"><h4>Tier 4</h4><p id="t4">0</p></div>
+<div class="card"><h4>Tier 5</h4><p id="t5">0</p></div>
 </div>
 
-<!-- Table -->
-
 <div class="box">
-
 <table>
 <tr>
-<th>Level</th>
+<th>Tier</th>
 <th>Product</th>
 <th>Amount</th>
-<th>Commission</th>
+<th>Incentive</th>
 <th>Staff</th>
 </tr>
-
 <tbody id="table"></tbody>
-
 </table>
-
 </div>
 
 </div>
 
 <script>
 
-/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Commission Structure */
-const levels = [0.1, 0.05, 0.03, 0.01, 0.01];
+let tiers=[0.1,0.05,0.03,0.01,0.01];
 
-/* Load Sales */
-let sales = JSON.parse(localStorage.getItem("sales")) || [];
+let sales=JSON.parse(localStorage.getItem("sales"))||[];
 
-let totals = [0,0,0,0,0];
+let totals=[0,0,0,0,0];
 
-/* Process */
 sales.forEach(s=>{
-
 for(let i=0;i<5;i++){
-
-let comm = s.amount * levels[i];
-
-totals[i]+=comm;
+let inc=s.amount*tiers[i];
+totals[i]+=inc;
 
 document.getElementById("table").innerHTML+=`
 <tr>
-<td>Level ${i+1}</td>
+<td>Tier ${i+1}</td>
 <td>${s.name}</td>
 <td>₹${s.amount}</td>
-<td>₹${comm.toFixed(0)}</td>
+<td>₹${inc.toFixed(0)}</td>
 <td>${s.staff}</td>
 </tr>
 `;
-
 }
-
 });
 
-/* Update UI */
-document.getElementById("l1").innerText = totals[0].toFixed(0);
-document.getElementById("l2").innerText = totals[1].toFixed(0);
-document.getElementById("l3").innerText = totals[2].toFixed(0);
-document.getElementById("l4").innerText = totals[3].toFixed(0);
-document.getElementById("l5").innerText = totals[4].toFixed(0);
+document.getElementById("t1").innerText=totals[0].toFixed(0);
+document.getElementById("t2").innerText=totals[1].toFixed(0);
+document.getElementById("t3").innerText=totals[2].toFixed(0);
+document.getElementById("t4").innerText=totals[3].toFixed(0);
+document.getElementById("t5").innerText=totals[4].toFixed(0);
 
-let total = totals.reduce((a,b)=>a+b,0);
-document.getElementById("total").innerText = total.toFixed(0);
+let total=totals.reduce((a,b)=>a+b,0);
+document.getElementById("total").innerText=total.toFixed(0);
 
 </script>
 
