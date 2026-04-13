@@ -15,34 +15,43 @@ body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
 
 .sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
+.main{margin-left:260px;padding:20px;width:100%;}
 
 /* Header */
 .header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
-margin-bottom:20px;
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
 /* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
+}
+
+input,select{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
 /* Cards */
@@ -55,30 +64,21 @@ gap:20px;
 .card{
 background:white;padding:20px;border-radius:15px;
 text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
 
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
-
-/* Inputs */
-input,select{
-padding:10px;margin:5px;width:200px;
-}
-
-/* Button */
-button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+.card p{
+font-size:22px;color:#2e7d32;font-weight:bold;
 }
 
 /* Table */
-table{width:100%;border-collapse:collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
-.low{color:red;font-weight:bold;}
-
+.low{
+color:red;font-weight:bold;
+}
 </style>
 
 </head>
@@ -88,24 +88,27 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="dashboard.html">Dashboard</a>
-<a href="farmers.html">Farmers</a>
-<a href="sales.html">Sales</a>
-<a href="delivery.html">Delivery</a>
-<a href="inventory.html">Inventory</a>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">📦 Inventory Management</div>
+<div class="header">
+📦 Inventory Management
+</div>
 
 <!-- Add Stock -->
 
 <div class="box">
-<h3>Add / Update Stock</h3>
 
 <select id="product">
 <option>Nutri Jack Powder</option>
@@ -119,14 +122,14 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <option>Dubai Hub</option>
 </select>
 
-<input type="number" id="qty" placeholder="Quantity (kg / units)">
+<input type="number" id="qty" placeholder="Quantity">
 
 <select id="type">
 <option value="add">Stock In</option>
 <option value="remove">Stock Out</option>
 </select>
 
-<button onclick="updateStock()">Submit</button>
+<button onclick="updateStock()">Update Stock</button>
 
 </div>
 
@@ -140,7 +143,6 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Table -->
 
 <div class="box">
-<h3>Inventory Records</h3>
 
 <table>
 <tr>
@@ -160,15 +162,15 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <script>
 
-/* Protect Page */
+/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
+/* Data */
 let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
-let totalQty = 0;
 
-/* Update Stock */
+/* Update */
 function updateStock(){
 
 let product=document.getElementById("product").value;
@@ -183,47 +185,41 @@ return;
 
 let key = product + "_" + warehouse;
 
-if(!inventory[key]) inventory[key] = 0;
+if(!inventory[key]) inventory[key]=0;
 
 if(type==="add"){
-inventory[key] += qty;
+inventory[key]+=qty;
 }else{
-inventory[key] -= qty;
-if(inventory[key] < 0) inventory[key] = 0;
+inventory[key]-=qty;
+if(inventory[key]<0) inventory[key]=0;
 }
 
-saveInventory();
-renderTable();
-
-}
-
-/* Save */
-function saveInventory(){
 localStorage.setItem("inventory", JSON.stringify(inventory));
+
+load();
+
 }
 
-/* Render */
-function renderTable(){
+/* Load */
+function load(){
 
 let table=document.getElementById("table");
 table.innerHTML="";
 
-totalQty = 0;
-let count = 0;
+let total=0;
+let count=0;
 
 for(let key in inventory){
 
-let parts = key.split("_");
-let product = parts[0];
-let warehouse = parts[1];
-let qty = inventory[key];
+let [product,warehouse]=key.split("_");
+let qty=inventory[key];
 
-totalQty += qty;
+total+=qty;
 count++;
 
-let status = qty < 50 ? "Low Stock ⚠️" : "Available";
+let status = qty<50 ? "Low Stock ⚠️" : "Available";
 
-table.innerHTML += `
+table.innerHTML+=`
 <tr>
 <td>${product}</td>
 <td>${warehouse}</td>
@@ -231,18 +227,14 @@ table.innerHTML += `
 <td>${status}</td>
 </tr>
 `;
+}
+
+document.getElementById("items").innerText=count;
+document.getElementById("totalQty").innerText=total;
 
 }
 
-document.getElementById("items").innerText = count;
-document.getElementById("totalQty").innerText = totalQty;
-
-}
-
-/* Load */
-window.onload=function(){
-renderTable();
-}
+load();
 
 </script>
 
