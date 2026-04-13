@@ -11,24 +11,17 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-
-.logo-box{
-display:flex;align-items:center;gap:10px;margin-bottom:20px;
-}
-
+.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
-
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
-
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
@@ -45,16 +38,11 @@ display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;margin-bottom:20px;
 }
-
 .card{
-background:white;padding:20px;border-radius:15px;
-text-align:center;
+background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
-
-.card p{
-font-size:22px;color:#2e7d32;font-weight:bold;
-}
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
 
 /* Box */
 .box{
@@ -71,13 +59,12 @@ margin-bottom:20px;
 <!-- Sidebar -->
 
 <div class="sidebar">
-
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -85,29 +72,32 @@ margin-bottom:20px;
 
 <div class="main">
 
-<div class="header">
-📊 Business Reports
-</div>
+<div class="header">📊 Business Reports</div>
 
 <!-- Summary -->
 
 <div class="cards">
 <div class="card"><h3>Total Sales</h3><p id="sales">0</p></div>
 <div class="card"><h3>Total Commission</h3><p id="commission">0</p></div>
-<div class="card"><h3>Total Orders</h3><p id="orders">0</p></div>
-<div class="card"><h3>Delivered</h3><p id="delivered">0</p></div>
+<div class="card"><h3>Total Activities</h3><p id="activities">0</p></div>
+<div class="card"><h3>Delivered Orders</h3><p id="delivered">0</p></div>
 </div>
 
 <!-- Charts -->
 
 <div class="box">
-<h3>Sales vs Commission</h3>
+<h3>📊 Sales vs Commission</h3>
 <canvas id="barChart"></canvas>
 </div>
 
 <div class="box">
-<h3>Staff Performance</h3>
-<canvas id="pieChart"></canvas>
+<h3>👷 Staff Performance (Sales)</h3>
+<canvas id="salesChart"></canvas>
+</div>
+
+<div class="box">
+<h3>📋 Staff Activity Performance</h3>
+<canvas id="activityChart"></canvas>
 </div>
 
 </div>
@@ -122,45 +112,63 @@ window.location.href="login.html";
 /* Load Data */
 let sales = JSON.parse(localStorage.getItem("sales")) || [];
 let deliveries = JSON.parse(localStorage.getItem("delivery")) || [];
+let activities = JSON.parse(localStorage.getItem("activities")) || [];
 
 /* Totals */
-let totalSales = sales.reduce((a,b)=>a+b.amount,0);
-let totalCommission = sales.reduce((a,b)=>a+b.commission,0);
-
-let totalOrders = deliveries.length;
+let totalSales = sales.reduce((a,b)=>a+(b.amount||0),0);
+let totalCommission = sales.reduce((a,b)=>a+(b.commission||0),0);
+let totalActivities = activities.length;
 let delivered = deliveries.filter(x=>x.status==="Delivered").length;
 
 /* Update UI */
 document.getElementById("sales").innerText = totalSales;
 document.getElementById("commission").innerText = totalCommission;
-document.getElementById("orders").innerText = totalOrders;
+document.getElementById("activities").innerText = totalActivities;
 document.getElementById("delivered").innerText = delivered;
 
-/* Bar Chart */
+/* Chart 1 */
 new Chart(document.getElementById("barChart"),{
 type:'bar',
 data:{
-labels:["Sales","Commission","Orders","Delivered"],
+labels:["Sales","Commission","Activities","Delivered"],
 datasets:[{
-data:[totalSales,totalCommission,totalOrders,delivered]
+data:[totalSales,totalCommission,totalActivities,delivered]
 }]
 }
 });
 
-/* Staff Performance */
-let staffData = {};
-
+/* Staff Sales */
+let staffSales = {};
 sales.forEach(s=>{
-if(!staffData[s.staff]) staffData[s.staff]=0;
-staffData[s.staff]+=s.amount;
+if(!staffSales[s.staff]) staffSales[s.staff]=0;
+staffSales[s.staff]+=s.amount;
 });
 
-new Chart(document.getElementById("pieChart"),{
+/* Chart 2 */
+new Chart(document.getElementById("salesChart"),{
 type:'pie',
 data:{
-labels:Object.keys(staffData),
+labels:Object.keys(staffSales),
 datasets:[{
-data:Object.values(staffData)
+data:Object.values(staffSales)
+}]
+}
+});
+
+/* Staff Activities */
+let staffActivities = {};
+activities.forEach(a=>{
+if(!staffActivities[a.staff]) staffActivities[a.staff]=0;
+staffActivities[a.staff]++;
+});
+
+/* Chart 3 */
+new Chart(document.getElementById("activityChart"),{
+type:'pie',
+data:{
+labels:Object.keys(staffActivities),
+datasets:[{
+data:Object.values(staffActivities)
 }]
 }
 });
