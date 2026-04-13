@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floraza Activities</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{display:flex;background:#f4f6f9;}
+
+/* Sidebar */
+.sidebar{
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
+}
+
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
+
+.sidebar a{
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
+}
+
+.sidebar a:hover{background:#1b5e20;}
+
+/* Main */
+.main{margin-left:260px;padding:20px;width:100%;}
+
+/* Header */
+.header{
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
+}
+
+/* Box */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+/* Inputs */
+input,textarea{
+padding:10px;margin:5px;width:220px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="header">
+📋 Daily Activity Tracking
+</div>
+
+<!-- Form -->
+
+<div class="box">
+
+<input id="farmerId" placeholder="Farmer ID (FRM00001)">
+<input id="task" placeholder="Work Done (Visit / Follow-up)">
+<input type="date" id="date">
+
+<br>
+
+<button onclick="saveActivity()">Save Activity</button>
+
+</div>
+
+<!-- Summary -->
+
+<div class="box">
+<h3>📊 Monthly Performance</h3>
+<p id="monthlyCount">0 Activities this month</p>
+</div>
+
+<!-- Table -->
+
+<div class="box">
+
+<table>
+<tr>
+<th>Date</th>
+<th>Staff</th>
+<th>Farmer ID</th>
+<th>Activity</th>
+</tr>
+
+<tbody id="table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Protect Page */
+if(localStorage.getItem("loggedIn")!=="true"){
+window.location.href="login.html";
+}
+
+/* Load Data */
+let activities = JSON.parse(localStorage.getItem("activities")) || [];
+
+/* Current User */
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+/* Save Activity */
+function saveActivity(){
+
+let farmerId = document.getElementById("farmerId").value;
+let task = document.getElementById("task").value;
+let date = document.getElementById("date").value;
+
+if(!farmerId || !task || !date){
+alert("Fill all fields");
+return;
+}
+
+let activity = {
+farmerId,
+task,
+date,
+staff: currentUser.username
+};
+
+activities.push(activity);
+
+localStorage.setItem("activities", JSON.stringify(activities));
+
+loadActivities();
+
+/* Clear */
+document.getElementById("farmerId").value="";
+document.getElementById("task").value="";
+document.getElementById("date").value="";
+}
+
+/* Load Activities */
+function loadActivities(){
+
+let table = document.getElementById("table");
+table.innerHTML="";
+
+let now = new Date();
+let monthlyCount = 0;
+
+activities.forEach(a=>{
+
+let d = new Date(a.date);
+
+if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()){
+monthlyCount++;
+}
+
+table.innerHTML += `
+<tr>
+<td>${a.date}</td>
+<td>${a.staff}</td>
+<td>${a.farmerId}</td>
+<td>${a.task}</td>
+</tr>
+`;
+});
+
+document.getElementById("monthlyCount").innerText =
+monthlyCount + " Activities this month";
+
+}
+
+loadActivities();
+
+</script>
+
+</body>
+</html>
