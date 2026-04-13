@@ -15,68 +15,51 @@ body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
 
 .sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
+.main{
+margin-left:260px;padding:20px;width:100%;
+}
 
 /* Header */
 .header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
+}
+
+/* Form */
+.form-box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
 }
 
-/* Box */
-.box{
-background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-margin-bottom:20px;
-}
-
-/* Cards */
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-}
-
-.card{
-background:white;padding:20px;border-radius:15px;
-text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
-
-/* Inputs */
-input{
+input,select{
 padding:10px;margin:5px;width:200px;
 }
 
 /* Button */
 button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
 /* Table */
-table{width:100%;border-collapse:collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
-
 </style>
 
 </head>
@@ -86,54 +69,56 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="dashboard.html">Dashboard</a>
-<a href="farmers.html">Farmers</a>
-<a href="sales.html">Sales</a>
-<a href="delivery.html">Delivery</a>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">👨‍🌾 Farmer Management</div>
+<div class="header">
+👨‍🌾 Farmer Management
+</div>
 
-<!-- Add Farmer -->
+<!-- Form -->
 
-<div class="box">
-<h3>Add Farmer</h3>
+<div class="form-box">
 
-<input id="fname" placeholder="Farmer Name">
-<input id="village" placeholder="Village / Location">
-<input id="area" type="number" placeholder="Area (Acres)">
-<input id="plants" type="number" placeholder="Number of Plants">
+<input id="name" placeholder="Farmer Name">
+<input id="phone" placeholder="Phone">
+<input id="location" placeholder="Location">
+<input id="acres" placeholder="Land (Acres)">
+<input id="plants" placeholder="Plants">
+
+<select id="staff"></select>
 
 <button onclick="addFarmer()">Add Farmer</button>
 
 </div>
 
-<!-- Summary -->
-
-<div class="cards">
-<div class="card"><h3>Total Farmers</h3><p id="totalFarmers">0</p></div>
-<div class="card"><h3>Total Area (Acres)</h3><p id="totalArea">0</p></div>
-<div class="card"><h3>Total Plants</h3><p id="totalPlants">0</p></div>
-</div>
-
 <!-- Table -->
 
-<div class="box">
-<h3>Farmer List</h3>
+<div class="form-box">
 
 <table>
 <tr>
 <th>Name</th>
-<th>Village</th>
-<th>Area</th>
+<th>Phone</th>
+<th>Location</th>
+<th>Acres</th>
 <th>Plants</th>
+<th>Staff</th>
 </tr>
+
 <tbody id="table"></tbody>
+
 </table>
 
 </div>
@@ -147,73 +132,62 @@ if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-let farmers=[];
-let totalArea=0,totalPlants=0;
+/* Load Staff */
+let staffList = JSON.parse(localStorage.getItem("staff")) || [];
 
-/* Add Farmer */
-function addFarmer(){
+staffList.forEach(s=>{
+document.getElementById("staff").innerHTML +=
+`<option value="${s.username}">${s.username}</option>`;
+});
 
-let name=document.getElementById("fname").value;
-let village=document.getElementById("village").value;
-let area=parseFloat(document.getElementById("area").value);
-let plants=parseInt(document.getElementById("plants").value);
+/* Load Farmers */
+let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 
-if(!name || !area || !plants){
-alert("Fill all fields");
-return;
-}
+function loadFarmers(){
 
-farmers.push({name,village,area,plants});
+document.getElementById("table").innerHTML="";
 
-totalArea+=area;
-totalPlants+=plants;
-
+farmers.forEach(f=>{
 document.getElementById("table").innerHTML+=`
 <tr>
-<td>${name}</td>
-<td>${village}</td>
-<td>${area}</td>
-<td>${plants}</td>
-</tr>
-`;
-
-document.getElementById("totalFarmers").innerText=farmers.length;
-document.getElementById("totalArea").innerText=totalArea;
-document.getElementById("totalPlants").innerText=totalPlants;
-
-// Save
-localStorage.setItem("farmers",JSON.stringify(farmers));
-localStorage.setItem("area",totalArea);
-localStorage.setItem("plants",totalPlants);
-
-}
-
-/* Load Data */
-window.onload=function(){
-
-let f=JSON.parse(localStorage.getItem("farmers"))||[];
-let a=parseFloat(localStorage.getItem("area"))||0;
-let p=parseInt(localStorage.getItem("plants"))||0;
-
-farmers=f;
-totalArea=a;
-totalPlants=p;
-
-f.forEach(x=>{
-document.getElementById("table").innerHTML+=`
-<tr>
-<td>${x.name}</td>
-<td>${x.village}</td>
-<td>${x.area}</td>
-<td>${x.plants}</td>
+<td>${f.name}</td>
+<td>${f.phone}</td>
+<td>${f.location}</td>
+<td>${f.acres}</td>
+<td>${f.plants}</td>
+<td>${f.staff}</td>
 </tr>
 `;
 });
 
-document.getElementById("totalFarmers").innerText=f.length;
-document.getElementById("totalArea").innerText=a;
-document.getElementById("totalPlants").innerText=p;
+}
 
+loadFarmers();
+
+/* Add Farmer */
+function addFarmer(){
+
+let farmer = {
+name: document.getElementById("name").value,
+phone: document.getElementById("phone").value,
+location: document.getElementById("location").value,
+acres: document.getElementById("acres").value,
+plants: document.getElementById("plants").value,
+staff: document.getElementById("staff").value
+};
+
+farmers.push(farmer);
+
+localStorage.setItem("farmers", JSON.stringify(farmers));
+
+loadFarmers();
+
+/* Clear */
+document.getElementById("name").value="";
+document.getElementById("phone").value="";
+document.getElementById("location").value="";
+document.getElementById("acres").value="";
+document.getElementById("plants").value="";
 }
 
 </script>
