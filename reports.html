@@ -19,6 +19,7 @@ width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fi
 }
 .logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
+
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
@@ -38,11 +39,15 @@ display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;margin-bottom:20px;
 }
+
 .card{
 background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
+
+.card p{
+font-size:22px;color:#2e7d32;font-weight:bold;
+}
 
 /* Box */
 .box{
@@ -59,12 +64,13 @@ margin-bottom:20px;
 <!-- Sidebar -->
 
 <div class="sidebar">
+
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -72,31 +78,33 @@ margin-bottom:20px;
 
 <div class="main">
 
-<div class="header">📊 Business Reports</div>
+<div class="header">
+📊 Business Reports & Analytics
+</div>
 
 <!-- Summary -->
 
 <div class="cards">
 <div class="card"><h3>Total Sales</h3><p id="sales">0</p></div>
-<div class="card"><h3>Total Commission</h3><p id="commission">0</p></div>
+<div class="card"><h3>Total Incentives</h3><p id="incentives">0</p></div>
 <div class="card"><h3>Total Activities</h3><p id="activities">0</p></div>
-<div class="card"><h3>Delivered Orders</h3><p id="delivered">0</p></div>
+<div class="card"><h3>Monthly Visits</h3><p id="monthly">0</p></div>
 </div>
 
 <!-- Charts -->
 
 <div class="box">
-<h3>📊 Sales vs Commission</h3>
+<h3>Sales vs Incentives</h3>
 <canvas id="barChart"></canvas>
 </div>
 
 <div class="box">
-<h3>👷 Staff Performance (Sales)</h3>
-<canvas id="salesChart"></canvas>
+<h3>Staff Performance (Sales)</h3>
+<canvas id="pieChart"></canvas>
 </div>
 
 <div class="box">
-<h3>📋 Staff Activity Performance</h3>
+<h3>Activity Performance (Visits)</h3>
 <canvas id="activityChart"></canvas>
 </div>
 
@@ -111,41 +119,48 @@ window.location.href="login.html";
 
 /* Load Data */
 let sales = JSON.parse(localStorage.getItem("sales")) || [];
-let deliveries = JSON.parse(localStorage.getItem("delivery")) || [];
 let activities = JSON.parse(localStorage.getItem("activities")) || [];
 
 /* Totals */
-let totalSales = sales.reduce((a,b)=>a+(b.amount||0),0);
-let totalCommission = sales.reduce((a,b)=>a+(b.commission||0),0);
+let totalSales = sales.reduce((a,b)=>a+b.amount,0);
+let totalIncentives = totalSales * 0.2;
+
+/* Activities */
 let totalActivities = activities.length;
-let delivered = deliveries.filter(x=>x.status==="Delivered").length;
+
+let now = new Date();
+
+let monthly = activities.filter(a=>{
+let d = new Date(a.date);
+return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+});
 
 /* Update UI */
-document.getElementById("sales").innerText = totalSales;
-document.getElementById("commission").innerText = totalCommission;
+document.getElementById("sales").innerText = totalSales.toFixed(0);
+document.getElementById("incentives").innerText = totalIncentives.toFixed(0);
 document.getElementById("activities").innerText = totalActivities;
-document.getElementById("delivered").innerText = delivered;
+document.getElementById("monthly").innerText = monthly.length;
 
-/* Chart 1 */
+/* Chart 1: Sales vs Incentives */
 new Chart(document.getElementById("barChart"),{
 type:'bar',
 data:{
-labels:["Sales","Commission","Activities","Delivered"],
+labels:["Sales","Incentives"],
 datasets:[{
-data:[totalSales,totalCommission,totalActivities,delivered]
+data:[totalSales,totalIncentives]
 }]
 }
 });
 
-/* Staff Sales */
+/* Staff Performance (Sales) */
 let staffSales = {};
+
 sales.forEach(s=>{
 if(!staffSales[s.staff]) staffSales[s.staff]=0;
 staffSales[s.staff]+=s.amount;
 });
 
-/* Chart 2 */
-new Chart(document.getElementById("salesChart"),{
+new Chart(document.getElementById("pieChart"),{
 type:'pie',
 data:{
 labels:Object.keys(staffSales),
@@ -155,20 +170,20 @@ data:Object.values(staffSales)
 }
 });
 
-/* Staff Activities */
-let staffActivities = {};
+/* Activity Performance */
+let staffActivity = {};
+
 activities.forEach(a=>{
-if(!staffActivities[a.staff]) staffActivities[a.staff]=0;
-staffActivities[a.staff]++;
+if(!staffActivity[a.staff]) staffActivity[a.staff]=0;
+staffActivity[a.staff]++;
 });
 
-/* Chart 3 */
 new Chart(document.getElementById("activityChart"),{
 type:'pie',
 data:{
-labels:Object.keys(staffActivities),
+labels:Object.keys(staffActivity),
 datasets:[{
-data:Object.values(staffActivities)
+data:Object.values(staffActivity)
 }]
 }
 });
