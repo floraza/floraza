@@ -15,34 +15,43 @@ body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
 
 .sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
+.main{margin-left:260px;padding:20px;width:100%;}
 
 /* Header */
 .header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
-margin-bottom:20px;
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
 /* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
+}
+
+input,select{
+padding:10px;margin:5px;width:200px;
+}
+
+/* Button */
+button{
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
 /* Cards */
@@ -55,28 +64,17 @@ gap:20px;
 .card{
 background:white;padding:20px;border-radius:15px;
 text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
 
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
-
-/* Inputs */
-input,select{
-padding:10px;margin:5px;width:200px;
-}
-
-/* Button */
-button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+.card p{
+font-size:22px;color:#2e7d32;font-weight:bold;
 }
 
 /* Table */
-table{width:100%;border-collapse:collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
-
 </style>
 
 </head>
@@ -86,26 +84,30 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="dashboard.html">Dashboard</a>
-<a href="farmers.html">Farmers</a>
-<a href="sales.html">Sales</a>
-<a href="delivery.html">Delivery</a>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">🚚 Delivery Management</div>
+<div class="header">
+🚚 Delivery Management
+</div>
 
 <!-- Add Delivery -->
 
 <div class="box">
-<h3>Add Delivery</h3>
 
-<input id="cust" placeholder="Customer Name">
-<input id="loc" placeholder="Location">
+<input id="name" placeholder="Customer Name">
+<input id="location" placeholder="Location">
 
 <select id="product">
 <option>Nutri Jack Powder</option>
@@ -115,6 +117,8 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 </select>
 
 <input type="number" id="qty" placeholder="Quantity">
+
+<select id="staff"></select>
 
 <select id="status">
 <option>Pending</option>
@@ -129,14 +133,13 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Summary -->
 
 <div class="cards">
-<div class="card"><h3>Total Orders</h3><p id="totalOrders">0</p></div>
+<div class="card"><h3>Total Orders</h3><p id="orders">0</p></div>
 <div class="card"><h3>Delivered</h3><p id="delivered">0</p></div>
 </div>
 
 <!-- Table -->
 
 <div class="box">
-<h3>Delivery Records</h3>
 
 <table>
 <tr>
@@ -145,6 +148,7 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <th>Product</th>
 <th>Qty</th>
 <th>Status</th>
+<th>Staff</th>
 </tr>
 
 <tbody id="table"></tbody>
@@ -157,82 +161,69 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <script>
 
-/* Protect Page */
+/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-let deliveries=[];
-let totalOrders=0;
-let deliveredCount=0;
+/* Load Staff */
+let staffList = JSON.parse(localStorage.getItem("staff")) || [];
 
-/* Add Delivery */
+staffList.forEach(s=>{
+document.getElementById("staff").innerHTML +=
+`<option>${s.username}</option>`;
+});
+
+/* Data */
+let deliveries = JSON.parse(localStorage.getItem("delivery")) || [];
+
+/* Add */
 function addDelivery(){
 
-let name=document.getElementById("cust").value;
-let loc=document.getElementById("loc").value;
-let product=document.getElementById("product").value;
-let qty=parseInt(document.getElementById("qty").value);
-let status=document.getElementById("status").value;
+let d = {
+name: document.getElementById("name").value,
+location: document.getElementById("location").value,
+product: document.getElementById("product").value,
+qty: document.getElementById("qty").value,
+status: document.getElementById("status").value,
+staff: document.getElementById("staff").value
+};
 
-if(!name || !qty){
-alert("Fill all fields");
-return;
-}
+deliveries.push(d);
 
-deliveries.push({name,loc,product,qty,status});
-totalOrders++;
+localStorage.setItem("delivery", JSON.stringify(deliveries));
 
-if(status==="Delivered") deliveredCount++;
-
-// Update UI
-document.getElementById("totalOrders").innerText=totalOrders;
-document.getElementById("delivered").innerText=deliveredCount;
-
-document.getElementById("table").innerHTML+=`
-<tr>
-<td>${name}</td>
-<td>${loc}</td>
-<td>${product}</td>
-<td>${qty}</td>
-<td>${status}</td>
-</tr>
-`;
-
-// Save
-localStorage.setItem("deliveryData",JSON.stringify(deliveries));
-localStorage.setItem("ordersTotal",totalOrders);
-localStorage.setItem("deliveredTotal",deliveredCount);
+load();
 
 }
 
-/* Load Data */
-window.onload=function(){
+/* Load */
+function load(){
 
-let d=JSON.parse(localStorage.getItem("deliveryData"))||[];
-let t=parseInt(localStorage.getItem("ordersTotal"))||0;
-let dc=parseInt(localStorage.getItem("deliveredTotal"))||0;
+document.getElementById("table").innerHTML="";
 
-deliveries=d;
-totalOrders=t;
-deliveredCount=dc;
+let total = deliveries.length;
+let delivered = deliveries.filter(x=>x.status==="Delivered").length;
 
-d.forEach(x=>{
+deliveries.forEach(d=>{
 document.getElementById("table").innerHTML+=`
 <tr>
-<td>${x.name}</td>
-<td>${x.loc}</td>
-<td>${x.product}</td>
-<td>${x.qty}</td>
-<td>${x.status}</td>
+<td>${d.name}</td>
+<td>${d.location}</td>
+<td>${d.product}</td>
+<td>${d.qty}</td>
+<td>${d.status}</td>
+<td>${d.staff}</td>
 </tr>
 `;
 });
 
-document.getElementById("totalOrders").innerText=t;
-document.getElementById("delivered").innerText=dc;
+document.getElementById("orders").innerText = total;
+document.getElementById("delivered").innerText = delivered;
 
 }
+
+load();
 
 </script>
 
