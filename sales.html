@@ -18,6 +18,7 @@ width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fi
 }
 .logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
+
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
@@ -41,7 +42,6 @@ input,select{
 padding:10px;margin:5px;width:200px;
 }
 
-/* Button */
 button{
 padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
@@ -76,7 +76,7 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -89,6 +89,8 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Form -->
 
 <div class="box">
+
+<input id="farmerId" placeholder="Farmer ID (FRM00001)">
 
 <select id="product">
 <option value="1750">Nutri Jack Powder</option>
@@ -109,7 +111,7 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <div class="cards">
 <div class="card"><h3>Total Sales ₹</h3><p id="totalSales">0</p></div>
-<div class="card"><h3>Total Commission ₹</h3><p id="totalCommission">0</p></div>
+<div class="card"><h3>Total Incentives ₹</h3><p id="totalIncentives">0</p></div>
 </div>
 
 <!-- Table -->
@@ -117,10 +119,11 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <div class="box">
 <table>
 <tr>
+<th>Farmer ID</th>
 <th>Product</th>
 <th>Qty</th>
 <th>Amount</th>
-<th>Commission</th>
+<th>Incentive</th>
 <th>Staff</th>
 </tr>
 <tbody id="table"></tbody>
@@ -131,121 +134,114 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <script>
 
-/* PROTECT */
+/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* LOAD STAFF */
+/* Load Staff */
 let staffList = JSON.parse(localStorage.getItem("staff")) || [];
-let staffDropdown = document.getElementById("staff");
 
-if(staffList.length === 0){
-staffDropdown.innerHTML = "<option>No Staff</option>";
-}else{
 staffList.forEach(s=>{
-staffDropdown.innerHTML += `<option value="${s.username}">${s.username}</option>`;
+document.getElementById("staff").innerHTML +=
+`<option>${s.username}</option>`;
 });
-}
 
-/* DATA */
+/* Data */
 let sales = JSON.parse(localStorage.getItem("sales")) || [];
 
-/* ADD SALE */
+/* Add Sale */
 function addSale(){
 
+let farmerId = document.getElementById("farmerId").value;
 let productSelect = document.getElementById("product");
+
 let price = parseFloat(productSelect.value);
 let name = productSelect.options[productSelect.selectedIndex].text;
 
 let qty = parseInt(document.getElementById("qty").value);
 let staff = document.getElementById("staff").value;
 
-if(!qty || qty <= 0){
-alert("Enter valid quantity");
+if(!farmerId || !qty){
+alert("Enter all fields");
 return;
 }
 
-if(!staff || staff === "No Staff"){
-alert("No staff available");
-return;
-}
-
-/* INVENTORY CHECK */
+/* Inventory Check */
 let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
 let key = name + "_Biraldinni Factory";
 
-let currentStock = inventory[key] || 0;
+let stock = inventory[key] || 0;
 
-if(currentStock < qty){
-alert("Not enough stock! Available: " + currentStock);
+if(stock < qty){
+alert("Stock not available! Available: " + stock);
 return;
 }
 
-/* CALCULATE */
+/* Calculation */
 let amount = price * qty;
-let commission = amount * 0.1;
+let incentive = amount * 0.1;
 
-/* SAVE SALE */
-sales.push({name,qty,amount,commission,staff});
+/* Save Sale */
+sales.push({farmerId,name,qty,amount,incentive,staff});
 localStorage.setItem("sales", JSON.stringify(sales));
 
-/* UPDATE INVENTORY */
-inventory[key] = currentStock - qty;
+/* Update Inventory */
+inventory[key] = stock - qty;
 localStorage.setItem("inventory", JSON.stringify(inventory));
 
-/* AUTO DELIVERY */
+/* Auto Delivery */
 let delivery = JSON.parse(localStorage.getItem("delivery")) || [];
 
 delivery.push({
-name: "Customer",
-location: "Auto",
-product: name,
-qty: qty,
-status: "Pending",
-staff: staff
+farmerId,
+product:name,
+qty,
+status:"Pending",
+staff
 });
 
 localStorage.setItem("delivery", JSON.stringify(delivery));
 
-/* REFRESH */
-loadSales();
+load();
 
-/* CLEAR */
+/* Clear */
+document.getElementById("farmerId").value="";
 document.getElementById("qty").value="";
 }
 
-/* LOAD SALES */
-function loadSales(){
+/* Load */
+function load(){
 
 let table = document.getElementById("table");
-table.innerHTML = "";
+table.innerHTML="";
 
-let totalSales = 0;
-let totalCommission = 0;
+let totalSales=0;
+let totalIncentives=0;
 
 sales.forEach(s=>{
 
-totalSales += Number(s.amount) || 0;
-totalCommission += Number(s.commission) || 0;
+totalSales += s.amount;
+totalIncentives += s.incentive;
 
-table.innerHTML += `
+table.innerHTML+=`
 <tr>
+<td>${s.farmerId}</td>
 <td>${s.name}</td>
 <td>${s.qty}</td>
 <td>₹${s.amount}</td>
-<td>₹${s.commission}</td>
+<td>₹${s.incentive}</td>
 <td>${s.staff}</td>
 </tr>
 `;
 });
 
 document.getElementById("totalSales").innerText = totalSales.toFixed(0);
-document.getElementById("totalCommission").innerText = totalCommission.toFixed(0);
+document.getElementById("totalIncentives").innerText = totalIncentives.toFixed(0);
 
 }
 
-loadSales();
+load();
 
 </script>
 
