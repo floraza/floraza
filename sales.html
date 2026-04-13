@@ -10,24 +10,17 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-
-.logo-box{
-display:flex;align-items:center;gap:10px;margin-bottom:20px;
-}
-
+.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
-
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
-
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
@@ -38,11 +31,10 @@ display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border
 background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
-/* Form */
+/* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 20px rgba(0,0,0,0.1);
-margin-bottom:20px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);margin-bottom:20px;
 }
 
 input,select{
@@ -60,16 +52,11 @@ display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
 }
-
 .card{
-background:white;padding:20px;border-radius:15px;
-text-align:center;
+background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
-
-.card p{
-font-size:22px;color:#2e7d32;font-weight:bold;
-}
+.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
 
 /* Table */
 table{width:100%;border-collapse:collapse;}
@@ -84,7 +71,6 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
@@ -98,21 +84,10 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <div class="main">
 
-<div class="header">
-💰 Sales Management
-</div>
+<div class="header">💰 Sales Management</div>
 
-<!-- Add Sale -->
-let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+<!-- Form -->
 
-let key = name + "_Biraldinni Factory";
-
-if(inventory[key]){
-inventory[key] -= qty;
-if(inventory[key] < 0) inventory[key] = 0;
-}
-
-localStorage.setItem("inventory", JSON.stringify(inventory));
 <div class="box">
 
 <select id="product">
@@ -140,7 +115,6 @@ localStorage.setItem("inventory", JSON.stringify(inventory));
 <!-- Table -->
 
 <div class="box">
-
 <table>
 <tr>
 <th>Product</th>
@@ -149,72 +123,113 @@ localStorage.setItem("inventory", JSON.stringify(inventory));
 <th>Commission</th>
 <th>Staff</th>
 </tr>
-
 <tbody id="table"></tbody>
-
 </table>
-
 </div>
 
 </div>
 
 <script>
 
-/* Protect */
+/* PROTECT */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Load Staff */
+/* LOAD STAFF */
 let staffList = JSON.parse(localStorage.getItem("staff")) || [];
+let staffDropdown = document.getElementById("staff");
 
+if(staffList.length === 0){
+staffDropdown.innerHTML = "<option>No Staff</option>";
+}else{
 staffList.forEach(s=>{
-document.getElementById("staff").innerHTML +=
-`<option>${s.username}</option>`;
+staffDropdown.innerHTML += `<option value="${s.username}">${s.username}</option>`;
 });
+}
 
-/* Data */
+/* DATA */
 let sales = JSON.parse(localStorage.getItem("sales")) || [];
-let totalSales = 0;
-let totalCommission = 0;
 
-/* Add Sale */
+/* ADD SALE */
 function addSale(){
 
-let price=parseInt(document.getElementById("product").value);
-let name=document.getElementById("product").selectedOptions[0].text;
-let qty=parseInt(document.getElementById("qty").value);
-let staff=document.getElementById("staff").value;
+let productSelect = document.getElementById("product");
+let price = parseFloat(productSelect.value);
+let name = productSelect.options[productSelect.selectedIndex].text;
 
-if(!qty){
-alert("Enter quantity");
+let qty = parseInt(document.getElementById("qty").value);
+let staff = document.getElementById("staff").value;
+
+if(!qty || qty <= 0){
+alert("Enter valid quantity");
 return;
 }
 
-let amount=price*qty;
-let commission=amount*0.1; // 10%
-
-sales.push({name,qty,amount,commission,staff});
-
-localStorage.setItem("sales", JSON.stringify(sales));
-
-loadSales();
-
+if(!staff || staff === "No Staff"){
+alert("No staff available");
+return;
 }
 
-/* Load */
+/* INVENTORY CHECK */
+let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+let key = name + "_Biraldinni Factory";
+
+let currentStock = inventory[key] || 0;
+
+if(currentStock < qty){
+alert("Not enough stock! Available: " + currentStock);
+return;
+}
+
+/* CALCULATE */
+let amount = price * qty;
+let commission = amount * 0.1;
+
+/* SAVE SALE */
+sales.push({name,qty,amount,commission,staff});
+localStorage.setItem("sales", JSON.stringify(sales));
+
+/* UPDATE INVENTORY */
+inventory[key] = currentStock - qty;
+localStorage.setItem("inventory", JSON.stringify(inventory));
+
+/* AUTO DELIVERY */
+let delivery = JSON.parse(localStorage.getItem("delivery")) || [];
+
+delivery.push({
+name: "Customer",
+location: "Auto",
+product: name,
+qty: qty,
+status: "Pending",
+staff: staff
+});
+
+localStorage.setItem("delivery", JSON.stringify(delivery));
+
+/* REFRESH */
+loadSales();
+
+/* CLEAR */
+document.getElementById("qty").value="";
+}
+
+/* LOAD SALES */
 function loadSales(){
 
-document.getElementById("table").innerHTML="";
-totalSales=0;
-totalCommission=0;
+let table = document.getElementById("table");
+table.innerHTML = "";
+
+let totalSales = 0;
+let totalCommission = 0;
 
 sales.forEach(s=>{
 
-totalSales+=s.amount;
-totalCommission+=s.commission;
+totalSales += Number(s.amount) || 0;
+totalCommission += Number(s.commission) || 0;
 
-document.getElementById("table").innerHTML+=`
+table.innerHTML += `
 <tr>
 <td>${s.name}</td>
 <td>${s.qty}</td>
@@ -223,11 +238,10 @@ document.getElementById("table").innerHTML+=`
 <td>${s.staff}</td>
 </tr>
 `;
-
 });
 
-document.getElementById("totalSales").innerText=totalSales;
-document.getElementById("totalCommission").innerText=totalCommission;
+document.getElementById("totalSales").innerText = totalSales.toFixed(0);
+document.getElementById("totalCommission").innerText = totalCommission.toFixed(0);
 
 }
 
