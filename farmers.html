@@ -41,7 +41,7 @@ background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center
 }
 
 /* Form */
-.form-box{
+.box{
 background:white;padding:20px;border-radius:15px;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
@@ -69,13 +69,12 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-
 <div class="logo-box">
 <img src="logo.png">
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -83,13 +82,11 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <div class="main">
 
-<div class="header">
-👨‍🌾 Farmer Management
-</div>
+<div class="header">👨‍🌾 Farmer Management</div>
 
 <!-- Form -->
 
-<div class="form-box">
+<div class="box">
 
 <input id="name" placeholder="Farmer Name">
 <input id="phone" placeholder="Phone">
@@ -105,10 +102,11 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <!-- Table -->
 
-<div class="form-box">
+<div class="box">
 
 <table>
 <tr>
+<th>Farmer ID</th>
 <th>Name</th>
 <th>Phone</th>
 <th>Location</th>
@@ -127,29 +125,48 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
 <script>
 
-/* Protect Page */
+/* PROTECT */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Load Staff */
+/* GENERATE FARMER ID */
+function generateFarmerID(){
+
+let last = localStorage.getItem("farmerCounter") || 0;
+
+last = parseInt(last) + 1;
+
+localStorage.setItem("farmerCounter", last);
+
+return "FRM" + String(last).padStart(5,'0');
+}
+
+/* LOAD STAFF */
 let staffList = JSON.parse(localStorage.getItem("staff")) || [];
 
-staffList.forEach(s=>{
-document.getElementById("staff").innerHTML +=
-`<option value="${s.username}">${s.username}</option>`;
-});
+let staffDropdown = document.getElementById("staff");
 
-/* Load Farmers */
+if(staffList.length === 0){
+staffDropdown.innerHTML = "<option>No Staff</option>";
+}else{
+staffList.forEach(s=>{
+staffDropdown.innerHTML += `<option value="${s.username}">${s.username}</option>`;
+});
+}
+
+/* LOAD FARMERS */
 let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 
 function loadFarmers(){
 
-document.getElementById("table").innerHTML="";
+let table = document.getElementById("table");
+table.innerHTML="";
 
 farmers.forEach(f=>{
-document.getElementById("table").innerHTML+=`
+table.innerHTML += `
 <tr>
+<td>${f.id}</td>
 <td>${f.name}</td>
 <td>${f.phone}</td>
 <td>${f.location}</td>
@@ -164,16 +181,32 @@ document.getElementById("table").innerHTML+=`
 
 loadFarmers();
 
-/* Add Farmer */
+/* ADD FARMER */
 function addFarmer(){
 
+let name = document.getElementById("name").value;
+let phone = document.getElementById("phone").value;
+let location = document.getElementById("location").value;
+let acres = document.getElementById("acres").value;
+let plants = document.getElementById("plants").value;
+let staff = document.getElementById("staff").value;
+
+if(!name || !phone){
+alert("Fill required fields");
+return;
+}
+
+/* AUTO ID */
+let farmerId = generateFarmerID();
+
 let farmer = {
-name: document.getElementById("name").value,
-phone: document.getElementById("phone").value,
-location: document.getElementById("location").value,
-acres: document.getElementById("acres").value,
-plants: document.getElementById("plants").value,
-staff: document.getElementById("staff").value
+id: farmerId,
+name,
+phone,
+location,
+acres,
+plants,
+staff
 };
 
 farmers.push(farmer);
@@ -182,7 +215,7 @@ localStorage.setItem("farmers", JSON.stringify(farmers));
 
 loadFarmers();
 
-/* Clear */
+/* CLEAR */
 document.getElementById("name").value="";
 document.getElementById("phone").value="";
 document.getElementById("location").value="";
