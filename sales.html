@@ -103,7 +103,16 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 </div>
 
 <!-- Add Sale -->
+let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
 
+let key = name + "_Biraldinni Factory";
+
+if(inventory[key]){
+inventory[key] -= qty;
+if(inventory[key] < 0) inventory[key] = 0;
+}
+
+localStorage.setItem("inventory", JSON.stringify(inventory));
 <div class="box">
 
 <select id="product">
