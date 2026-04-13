@@ -10,24 +10,18 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-
-.logo-box{
-display:flex;align-items:center;gap:10px;margin-bottom:20px;
-}
-
+.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .logo-box img{width:40px;}
 
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
-
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
@@ -41,9 +35,8 @@ background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center
 /* Cards */
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
-margin-bottom:20px;
 }
 
 .card{
@@ -51,14 +44,8 @@ background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
 
-.card h3{margin-bottom:10px;}
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
-
-/* Box */
-.box{
-background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 20px rgba(0,0,0,0.1);
-margin-bottom:20px;
+.card p{
+font-size:22px;color:#2e7d32;font-weight:bold;
 }
 </style>
 
@@ -75,7 +62,7 @@ margin-bottom:20px;
 <h3>Floraza</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
 
 </div>
 
@@ -84,50 +71,46 @@ margin-bottom:20px;
 <div class="main">
 
 <div class="header">
-📊 Floraza Dashboard (Business Overview)
+📊 Floraza Dashboard
 </div>
-
-<!-- KPI Cards -->
 
 <div class="grid">
 
 <div class="card">
-<h3>Farmers</h3>
+<h3>Total Farmers</h3>
 <p id="farmers">0</p>
 </div>
 
 <div class="card">
-<h3>Plants</h3>
+<h3>Total Plants</h3>
 <p id="plants">0</p>
 </div>
 
 <div class="card">
-<h3>Sales ₹</h3>
+<h3>Total Sales ₹</h3>
 <p id="sales">0</p>
 </div>
 
 <div class="card">
-<h3>Commission ₹</h3>
-<p id="commission">0</p>
+<h3>Total Incentives ₹</h3>
+<p id="incentives">0</p>
 </div>
 
 <div class="card">
-<h3>Activities</h3>
+<h3>Total Deliveries</h3>
+<p id="delivery">0</p>
+</div>
+
+<div class="card">
+<h3>Total Activities</h3>
 <p id="activities">0</p>
 </div>
 
 <div class="card">
-<h3>Deliveries</h3>
-<p id="delivery">0</p>
+<h3>Monthly Visits</h3>
+<p id="monthly">0</p>
 </div>
 
-</div>
-
-<!-- Top Staff -->
-
-<div class="box">
-<h3>🏆 Top Performing Staff</h3>
-<p id="topStaff">No Data</p>
 </div>
 
 </div>
@@ -153,36 +136,28 @@ let totalPlants = farmers.reduce((sum,f)=>sum+(parseInt(f.plants)||0),0);
 document.getElementById("plants").innerText = totalPlants;
 
 /* Sales */
-let totalSales = sales.reduce((sum,s)=>sum+(s.amount||0),0);
-document.getElementById("sales").innerText = totalSales;
+let totalSales = sales.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+document.getElementById("sales").innerText = totalSales.toFixed(0);
 
-/* Commission */
-let totalCommission = sales.reduce((sum,s)=>sum+(s.commission||0),0);
-document.getElementById("commission").innerText = totalCommission;
-
-/* Activities */
-document.getElementById("activities").innerText = activities.length;
+/* Incentives */
+let totalIncentives = totalSales * 0.2;
+document.getElementById("incentives").innerText = totalIncentives.toFixed(0);
 
 /* Delivery */
 document.getElementById("delivery").innerText = delivery.length;
 
-/* Top Staff */
-let staffScore = {};
+/* Activities */
+document.getElementById("activities").innerText = activities.length;
 
-sales.forEach(s=>{
-if(!staffScore[s.staff]) staffScore[s.staff]=0;
-staffScore[s.staff]+=s.amount;
+/* Monthly Visits */
+let now = new Date();
+
+let monthly = activities.filter(a=>{
+let d = new Date(a.date);
+return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
 });
 
-activities.forEach(a=>{
-if(!staffScore[a.staff]) staffScore[a.staff]=0;
-staffScore[a.staff]+=10; // activity weight
-});
-
-let top = Object.keys(staffScore).reduce((a,b)=>
-staffScore[a]>staffScore[b]?a:b,null);
-
-document.getElementById("topStaff").innerText = top || "No Data";
+document.getElementById("monthly").innerText = monthly.length;
 
 </script>
 
