@@ -14,7 +14,7 @@
 body{
 height:100vh;
 display:flex;
-background:linear-gradient(135deg,#2e7d32,#66bb6a);
+background:linear-gradient(135deg,#1b5e20,#66bb6a);
 }
 
 /* Left */
@@ -25,9 +25,17 @@ flex-direction:column;
 justify-content:center;
 align-items:center;
 color:white;
+text-align:center;
 }
 
-.left h1{font-size:40px;margin-bottom:10px;}
+.left img{
+width:140px;
+margin-bottom:15px;
+filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.left h2{margin-bottom:10px;}
+
 .left p{opacity:0.9;}
 
 /* Right */
@@ -52,7 +60,7 @@ color:#2e7d32;
 }
 
 /* Inputs */
-select,input{
+input,select{
 width:100%;
 padding:12px;
 margin:10px 0;
@@ -67,7 +75,7 @@ position:relative;
 
 .pass span{
 position:absolute;
-right:10px;
+right:12px;
 top:50%;
 transform:translateY(-50%);
 cursor:pointer;
@@ -86,6 +94,10 @@ cursor:pointer;
 font-size:16px;
 }
 
+button:hover{
+background:#1b5e20;
+}
+
 /* Error */
 #error{
 color:red;
@@ -102,20 +114,29 @@ color:#2e7d32;
 text-decoration:none;
 }
 
+/* Mobile */
+@media(max-width:768px){
+body{flex-direction:column;}
+.right{border-radius:0;}
+}
 </style>
 
 </head>
 
 <body>
 
-<!-- Left -->
+<!-- LEFT SIDE -->
 
 <div class="left">
-<h1>🌱 Floraza</h1>
+
+<img src="logo.png" alt="Floraza Logo">
+
+<h2>Floraza</h2>
 <p>Empowering Farmers. Growing Future.</p>
+
 </div>
 
-<!-- Right -->
+<!-- RIGHT SIDE -->
 
 <div class="right">
 <div class="card">
@@ -125,6 +146,7 @@ text-decoration:none;
 <select id="role">
 <option>Admin</option>
 <option>Marketing</option>
+<option>Staff</option>
 </select>
 
 <input id="username" placeholder="Username">
@@ -145,43 +167,63 @@ text-decoration:none;
 
 <script>
 
-/* AUTO CREATE USERS */
-if(!localStorage.getItem("users")){
-localStorage.setItem("users", JSON.stringify([
+/* INIT DEFAULT USERS */
+function initUsers(){
+
+let users = JSON.parse(localStorage.getItem("users"));
+
+if(!users || users.length === 0){
+
+users = [
 {username:"admin", password:"1234", role:"Admin"},
 {username:"marketing", password:"1234", role:"Marketing"}
-]));
+];
+
+localStorage.setItem("users", JSON.stringify(users));
 }
 
-/* LOGIN */
+}
+
+initUsers();
+
+/* LOGIN FUNCTION */
 function login(){
 
-let role=document.getElementById("role").value;
-let username=document.getElementById("username").value.trim();
-let password=document.getElementById("password").value.trim();
+let role = document.getElementById("role").value;
+let username = document.getElementById("username").value.trim();
+let password = document.getElementById("password").value.trim();
 
-let users=JSON.parse(localStorage.getItem("users"));
+let users = JSON.parse(localStorage.getItem("users")) || [];
 
-let user=users.find(u =>
-u.username===username &&
-u.password===password &&
-u.role===role
+let user = users.find(u =>
+u.username === username &&
+u.password === password &&
+u.role === role
 );
 
 if(user){
+
 localStorage.setItem("loggedIn","true");
 localStorage.setItem("currentUser", JSON.stringify(user));
-window.location.href="dashboard.html";
+
+window.location.href = "dashboard.html";
+
 }else{
-document.getElementById("error").innerText="Invalid username or password";
+
+document.getElementById("error").innerText =
+"Invalid username or password";
+
 }
 
 }
 
 /* SHOW PASSWORD */
 function togglePass(){
-let pass=document.getElementById("password");
-pass.type = pass.type==="password" ? "text" : "password";
+
+let pass = document.getElementById("password");
+
+pass.type = pass.type === "password" ? "text" : "password";
+
 }
 
 </script>
