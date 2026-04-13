@@ -10,39 +10,37 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
 body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
 
 .sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 
 .sidebar a:hover{background:#1b5e20;}
 
 /* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
+.main{margin-left:260px;padding:20px;width:100%;}
 
 /* Header */
 .header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
-margin-bottom:20px;
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
 /* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-margin-bottom:20px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);margin-bottom:20px;
 }
 
 /* Inputs */
@@ -52,19 +50,15 @@ padding:10px;margin:5px;width:200px;
 
 /* Button */
 button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
 /* Table */
-table{width:100%;border-collapse:collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 
-.success{
-color:green;margin-top:10px;
-}
+.success{color:green;margin-top:10px;}
 </style>
 
 </head>
@@ -74,49 +68,55 @@ color:green;margin-top:10px;
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="dashboard.html">Dashboard</a>
-<a href="staff.html">Staff</a>
-<a href="farmers.html">Farmers</a>
-<a href="sales.html">Sales</a>
-<a href="delivery.html">Delivery</a>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">👷‍♂️ Field Staff Management</div>
+<div class="header">
+👷‍♂️ Staff Management
+</div>
 
-<!-- Add Staff -->
+<!-- Register -->
 
 <div class="box">
-<h3>Register New Staff</h3>
+<h3>Register Staff</h3>
 
 <input id="name" placeholder="Full Name">
-<input id="phone" placeholder="Phone Number">
+<input id="phone" placeholder="Phone">
 <input id="district" placeholder="District">
+
 <input type="password" id="password" placeholder="Password">
 
 <select id="role">
 <option>Staff</option>
 <option>Marketing</option>
+<option>Admin</option>
 </select>
 
-<button onclick="register()">Register Staff</button>
+<button onclick="register()">Register</button>
 
 <p class="success" id="msg"></p>
 
 </div>
 
-<!-- Staff List -->
+<!-- Table -->
 
 <div class="box">
 <h3>Staff List</h3>
 
 <table>
 <tr>
-<th>Staff ID</th>
+<th>ID</th>
 <th>Name</th>
 <th>Phone</th>
 <th>District</th>
@@ -133,13 +133,13 @@ color:green;margin-top:10px;
 
 <script>
 
-/* Protect Page */
+/* PROTECT */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Generate ID */
-function generateUsername(){
+/* GENERATE STAFF ID */
+function generateStaffID(){
 
 let last = localStorage.getItem("staffCounter") || 0;
 
@@ -150,15 +150,17 @@ localStorage.setItem("staffCounter", last);
 return "FLZ3" + String(last).padStart(5,'0');
 }
 
-/* Load Staff */
+/* LOAD DATA */
 let staffList = JSON.parse(localStorage.getItem("staff")) || [];
 
+/* LOAD TABLE */
 function loadStaff(){
 
-document.getElementById("table").innerHTML="";
+let table = document.getElementById("table");
+table.innerHTML = "";
 
 staffList.forEach(s=>{
-document.getElementById("table").innerHTML+=`
+table.innerHTML += `
 <tr>
 <td>${s.username}</td>
 <td>${s.name}</td>
@@ -173,39 +175,42 @@ document.getElementById("table").innerHTML+=`
 
 loadStaff();
 
-/* Register */
+/* REGISTER */
 function register(){
 
-let name=document.getElementById("name").value;
-let phone=document.getElementById("phone").value;
-let district=document.getElementById("district").value;
-let password=document.getElementById("password").value;
+let name=document.getElementById("name").value.trim();
+let phone=document.getElementById("phone").value.trim();
+let district=document.getElementById("district").value.trim();
+let password=document.getElementById("password").value.trim();
 let role=document.getElementById("role").value;
 
 if(!name || !phone || !password){
-alert("Fill all fields");
+alert("Fill all required fields");
 return;
 }
 
-// Auto ID
-let username = generateUsername();
+/* GENERATE ID */
+let username = generateStaffID();
 
+/* CREATE STAFF */
 let newStaff = {name,phone,district,username,password,role};
 
+/* SAVE STAFF */
 staffList.push(newStaff);
 localStorage.setItem("staff", JSON.stringify(staffList));
 
-/* Add to login users */
+/* ADD TO LOGIN USERS */
 let users = JSON.parse(localStorage.getItem("users")) || [];
 users.push(newStaff);
 localStorage.setItem("users", JSON.stringify(users));
 
+/* UI UPDATE */
 loadStaff();
 
 document.getElementById("msg").innerText =
-"Staff Registered. ID: " + username;
+"Staff Registered: " + username;
 
-/* Clear */
+/* CLEAR */
 document.getElementById("name").value="";
 document.getElementById("phone").value="";
 document.getElementById("district").value="";
