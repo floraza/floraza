@@ -11,72 +11,87 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
-body{display:flex;background:#f4f6f9;}
+body{
+display:flex;
+background:#f4f6f9;
+}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;
+height:100vh;
+background:#2e7d32;
+color:white;
+padding:20px;
+position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
-
-.sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
-}
-
-.sidebar a:hover{background:#1b5e20;}
-
-/* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
-
-/* Header */
-.header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
+.logo-box{
+display:flex;
+align-items:center;
+gap:10px;
 margin-bottom:20px;
 }
 
-/* Box */
-.box{
-background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+.logo-box img{
+width:40px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+margin:10px 0;
+padding:10px;
+border-radius:8px;
+}
+
+.sidebar a:hover{
+background:#1b5e20;
+}
+
+/* Main */
+.main{
+margin-left:260px;
+padding:20px;
+width:100%;
+}
+
+/* Header */
+.header{
+background:#388e3c;
+color:white;
+padding:15px;
+border-radius:10px;
+text-align:center;
 margin-bottom:20px;
 }
 
 /* Cards */
-.cards{
+.grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
 }
 
 .card{
-background:white;padding:20px;border-radius:15px;
+background:white;
+padding:20px;
+border-radius:15px;
 text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
 
-.card p{font-size:22px;color:#2e7d32;font-weight:bold;}
-
-/* Inputs */
-input,select{
-padding:10px;margin:5px;width:200px;
+.card h3{
+margin-bottom:10px;
+color:#333;
 }
 
-/* Button */
-button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+.card p{
+font-size:24px;
+color:#2e7d32;
+font-weight:bold;
 }
-
-/* Table */
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th{background:#2e7d32;color:white;}
-th,td{padding:10px;border:1px solid #ddd;text-align:center;}
-
 </style>
 
 </head>
@@ -86,102 +101,50 @@ th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="#">Dashboard</a>
-<a href="#">Sales</a>
-<a href="#">Delivery</a>
-<a href="#">Settings</a>
-<button onclick="logout()">Logout</button>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">Floraza Admin Dashboard</div>
-
-<!-- Profile -->
-
-<div class="box">
-<h3>👤 Profile</h3>
-<input id="name" placeholder="Name">
-<input id="role" placeholder="Role">
-<button onclick="saveProfile()">Save</button>
-<p id="profile"></p>
+<div class="header">
+📊 Floraza Dashboard
 </div>
 
-<!-- Cards -->
+<div class="grid">
 
-<div class="cards">
-<div class="card"><h3>💰 Sales</h3><p id="sales">0</p></div>
-<div class="card"><h3>💸 Commission</h3><p id="commission">0</p></div>
+<div class="card">
+<h3>Total Farmers</h3>
+<p id="farmers">0</p>
 </div>
 
-<!-- Sales -->
-
-<div class="box">
-<h3>📦 Add Sales</h3>
-
-<select id="product">
-<option value="1750">Nutri Jack</option>
-<option value="250">Plant</option>
-<option value="500">Humate</option>
-<option value="400">Seaweed</option>
-</select>
-
-<input type="number" id="qty" placeholder="Quantity">
-
-<button onclick="addSales()">Add</button>
-
-<table>
-<tr>
-<th>Product</th>
-<th>Qty</th>
-<th>Amount</th>
-<th>Commission</th>
-</tr>
-<tbody id="table"></tbody>
-</table>
-
+<div class="card">
+<h3>Total Plants</h3>
+<p id="plants">0</p>
 </div>
 
-<!-- Delivery -->
-
-<div class="box">
-<h3>🚚 Delivery</h3>
-
-<input id="cust" placeholder="Customer">
-<input id="loc" placeholder="Location">
-
-<select id="status">
-<option>Pending</option>
-<option>Dispatched</option>
-<option>Delivered</option>
-</select>
-
-<button onclick="addDelivery()">Add</button>
-
-<table>
-<tr>
-<th>Name</th>
-<th>Location</th>
-<th>Status</th>
-</tr>
-<tbody id="delivery"></tbody>
-</table>
-
+<div class="card">
+<h3>Sales ₹</h3>
+<p id="sales">0</p>
 </div>
 
-<!-- Change Password -->
+<div class="card">
+<h3>Commission ₹</h3>
+<p id="commission">0</p>
+</div>
 
-<div class="box">
-<h3>🔐 Change Password</h3>
-
-<input type="password" id="oldPass" placeholder="Old Password">
-<input type="password" id="newPass" placeholder="New Password">
-<input type="password" id="confirmPass" placeholder="Confirm Password">
-
-<button onclick="changePassword()">Update</button>
+<div class="card">
+<h3>Deliveries</h3>
+<p id="delivery">0</p>
+</div>
 
 </div>
 
@@ -194,80 +157,22 @@ if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Profile */
-function saveProfile(){
-let n=document.getElementById("name").value;
-let r=document.getElementById("role").value;
+/* Load Data */
+let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
+let sales = JSON.parse(localStorage.getItem("sales")) || [];
+let delivery = JSON.parse(localStorage.getItem("delivery")) || [];
 
-localStorage.setItem("name",n);
-localStorage.setItem("role",r);
+document.getElementById("farmers").innerText = farmers.length;
 
-document.getElementById("profile").innerText=n+" ("+r+")";
-}
+let totalPlants = farmers.reduce((sum,f)=>sum+(parseInt(f.plants)||0),0);
+document.getElementById("plants").innerText = totalPlants;
 
-/* Sales */
-let totalSales=0,totalCommission=0;
+let totalSales = sales.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+document.getElementById("sales").innerText = totalSales;
 
-function addSales(){
+document.getElementById("commission").innerText = (totalSales * 0.1).toFixed(0);
 
-let p=document.getElementById("product").value;
-let text=document.getElementById("product").selectedOptions[0].text;
-let q=parseInt(document.getElementById("qty").value);
-
-if(!q)return alert("Enter qty");
-
-let amount=p*q;
-let comm=0;
-
-if(p==1750)comm=400*q;
-if(p==250)comm=8*q;
-if(p==500)comm=50*q;
-if(p==400)comm=50*q;
-
-totalSales+=amount;
-totalCommission+=comm;
-
-document.getElementById("sales").innerText=totalSales;
-document.getElementById("commission").innerText=totalCommission;
-
-document.getElementById("table").innerHTML+=`
-<tr><td>${text}</td><td>${q}</td><td>₹${amount}</td><td>₹${comm}</td></tr>`;
-}
-
-/* Delivery */
-function addDelivery(){
-
-let name=document.getElementById("cust").value;
-let loc=document.getElementById("loc").value;
-let status=document.getElementById("status").value;
-
-document.getElementById("delivery").innerHTML+=`
-<tr><td>${name}</td><td>${loc}</td><td>${status}</td></tr>`;
-}
-
-/* Password */
-function changePassword(){
-
-let old=document.getElementById("oldPass").value;
-let newp=document.getElementById("newPass").value;
-let con=document.getElementById("confirmPass").value;
-
-let user=JSON.parse(localStorage.getItem("user"));
-
-if(old!==user.password){alert("Wrong password");return;}
-if(newp!==con){alert("Mismatch");return;}
-
-user.password=newp;
-localStorage.setItem("user",JSON.stringify(user));
-
-alert("Updated");
-}
-
-/* Logout */
-function logout(){
-localStorage.removeItem("loggedIn");
-window.location.href="login.html";
-}
+document.getElementById("delivery").innerText = delivery.length;
 
 </script>
 
