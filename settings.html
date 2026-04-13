@@ -15,58 +15,61 @@ body{display:flex;background:#f4f6f9;}
 
 /* Sidebar */
 .sidebar{
-width:230px;height:100vh;background:#2e7d32;
-color:white;padding:20px;position:fixed;
+width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
 
-.sidebar h2{margin-bottom:20px;}
+.logo-box{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+
+.logo-box img{width:40px;}
 
 .sidebar a{
-display:block;color:white;text-decoration:none;
-margin:10px 0;padding:10px;border-radius:8px;
+display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 
 .sidebar a:hover{background:#1b5e20;}
 
+.logout{
+margin-top:20px;
+background:red;
+text-align:center;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+}
+
 /* Main */
-.main{margin-left:250px;padding:20px;width:100%;}
+.main{margin-left:260px;padding:20px;width:100%;}
 
 /* Header */
 .header{
-background:#388e3c;color:white;padding:15px;
-border-radius:10px;text-align:center;
-margin-bottom:20px;
+background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
 /* Box */
 .box{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
 margin-bottom:20px;
 }
 
-/* Inputs */
 input{
 padding:10px;margin:5px;width:200px;
 }
 
 /* Button */
 button{
-padding:10px 15px;background:#2e7d32;
-color:white;border:none;border-radius:8px;
-cursor:pointer;
+padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
 .danger{
 background:red;
 }
 
-.info{
-margin-top:10px;
-color:#2e7d32;
-font-weight:500;
+.success{
+color:green;margin-top:10px;
 }
-
 </style>
 
 </head>
@@ -76,37 +79,40 @@ font-weight:500;
 <!-- Sidebar -->
 
 <div class="sidebar">
-<h2>🌱 Floraza</h2>
-<a href="dashboard.html">Dashboard</a>
-<a href="farmers.html">Farmers</a>
-<a href="sales.html">Sales</a>
-<a href="delivery.html">Delivery</a>
-<a href="inventory.html">Inventory</a>
-<a href="settings.html">Settings</a>
-<button onclick="logout()">Logout</button>
+
+<div class="logo-box">
+<img src="logo.png">
+<h3>Floraza</h3>
+</div>
+
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="mlm.html">MLM</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+
+<div class="logout" onclick="logout()">Logout</div>
+
 </div>
 
 <!-- Main -->
 
 <div class="main">
 
-<div class="header">⚙️ System Settings</div>
+<div class="header">
+⚙️ System Settings
+</div>
 
 <!-- Profile -->
 
 <div class="box">
-<h3>👤 Profile Settings</h3>
+<h3>👤 Profile</h3>
 
 <input id="name" placeholder="Name">
 <input id="role" placeholder="Role">
 
-<button onclick="saveProfile()">Save Profile</button>
+<button onclick="saveProfile()">Save</button>
 
-<p class="info" id="profile"></p>
-
+<p class="success" id="profileMsg"></p>
 </div>
 
-<!-- Password -->
+<!-- Change Password -->
 
 <div class="box">
 <h3>🔐 Change Password</h3>
@@ -119,12 +125,12 @@ font-weight:500;
 
 </div>
 
-<!-- System Reset -->
+<!-- Reset -->
 
 <div class="box">
 <h3>⚠️ System Reset</h3>
 
-<p>This will clear ALL system data (sales, farmers, inventory, etc.)</p>
+<p>This will delete all data</p>
 
 <button class="danger" onclick="resetSystem()">Reset System</button>
 
@@ -134,34 +140,21 @@ font-weight:500;
 
 <script>
 
-/* Protect Page */
+/* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
 window.location.href="login.html";
 }
 
-/* Profile */
+/* Save Profile */
 function saveProfile(){
 
 let name=document.getElementById("name").value;
 let role=document.getElementById("role").value;
 
-localStorage.setItem("name",name);
-localStorage.setItem("role",role);
+localStorage.setItem("profileName",name);
+localStorage.setItem("profileRole",role);
 
-document.getElementById("profile").innerText =
-"Saved: " + name + " (" + role + ")";
-}
-
-/* Load Profile */
-window.onload=function(){
-
-let name=localStorage.getItem("name");
-let role=localStorage.getItem("role");
-
-if(name){
-document.getElementById("profile").innerText =
-name + " (" + role + ")";
-}
+document.getElementById("profileMsg").innerText="Profile Saved";
 
 }
 
@@ -172,9 +165,13 @@ let old=document.getElementById("oldPass").value;
 let newp=document.getElementById("newPass").value;
 let con=document.getElementById("confirmPass").value;
 
-let user=JSON.parse(localStorage.getItem("user"));
+let users=JSON.parse(localStorage.getItem("users"));
 
-if(old!==user.password){
+let current=JSON.parse(localStorage.getItem("currentUser"));
+
+let user=users.find(u=>u.username===current.username);
+
+if(user.password!==old){
 alert("Wrong old password");
 return;
 }
@@ -185,21 +182,24 @@ return;
 }
 
 user.password=newp;
-localStorage.setItem("user",JSON.stringify(user));
 
-alert("Password updated successfully");
+localStorage.setItem("users", JSON.stringify(users));
+
+alert("Password updated");
 
 }
 
-/* Reset System */
+/* Reset */
 function resetSystem(){
 
-let confirmReset = confirm("Are you sure? This cannot be undone!");
+if(confirm("Are you sure?")){
 
-if(confirmReset){
 localStorage.clear();
-alert("System Reset Completed");
+
+alert("System Reset Done");
+
 window.location.href="login.html";
+
 }
 
 }
