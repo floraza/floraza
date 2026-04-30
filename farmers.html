@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floraza Farmers</title>
+<title>Floraza 2030 - Farmers</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -16,13 +16,15 @@ body{display:flex;background:#f4f6f9;}
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.logo-box img{width:40px;}
-
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
 }
 .sidebar a:hover{background:#1b5e20;}
+
+.logo{
+display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.logo img{width:40px;}
 
 /* Main */
 .main{margin-left:260px;padding:20px;width:100%;}
@@ -32,28 +34,30 @@ display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border
 background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center;margin-bottom:20px;
 }
 
-/* Box */
-.box{
+/* Form */
+.form{
 background:white;padding:20px;border-radius:15px;
-box-shadow:0 10px 20px rgba(0,0,0,0.1);
-margin-bottom:20px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);margin-bottom:20px;
+display:flex;flex-wrap:wrap;gap:10px;
 }
 
-/* Inputs */
 input,select{
-padding:10px;margin:5px;width:200px;
+padding:10px;border-radius:8px;border:1px solid #ccc;width:180px;
 }
 
-/* Button */
 button{
-padding:10px 15px;background:#2e7d32;color:white;border:none;border-radius:8px;cursor:pointer;
+background:#2e7d32;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;
 }
 
 /* Table */
+.table-box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
 table{width:100%;border-collapse:collapse;}
 th{background:#2e7d32;color:white;}
 th,td{padding:10px;border:1px solid #ddd;text-align:center;}
-
 img{border-radius:50%;}
 </style>
 
@@ -64,13 +68,12 @@ img{border-radius:50%;}
 <!-- Sidebar -->
 
 <div class="sidebar">
-
-<div class="logo-box">
-<img src="logo.png">
-<h3>Floraza</h3>
+<div class="logo">
+<img src="../assets/logo.png">
+<h3>Floraza 2030</h3>
 </div>
 
-<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
+<a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="reports.html">Reports</a> <a href="#" onclick="logout()">Logout</a>
 
 </div>
 
@@ -78,23 +81,22 @@ img{border-radius:50%;}
 
 <div class="main">
 
-<div class="header">
-👨‍🌾 Farmer Management
-</div>
+<div class="header">👨‍🌾 Farmer Management</div>
 
 <!-- Form -->
 
-<div class="box">
+<div class="form">
 
 <input id="name" placeholder="Farmer Name">
 <input id="phone" placeholder="Phone">
 <input id="location" placeholder="Location">
+
 <input id="acres" placeholder="Land (Acres)">
-<input id="plants" placeholder="Plants">
+<input id="plants" placeholder="Plants" readonly>
 
 <select id="staff"></select>
 
-<input type="file" id="photo" accept="image/*">
+<input type="file" id="photo">
 
 <button onclick="addFarmer()">Add Farmer</button>
 
@@ -102,8 +104,7 @@ img{border-radius:50%;}
 
 <!-- Table -->
 
-<div class="box">
-
+<div class="table-box">
 <table>
 <tr>
 <th>ID</th>
@@ -115,11 +116,8 @@ img{border-radius:50%;}
 <th>Plants</th>
 <th>Staff</th>
 </tr>
-
 <tbody id="table"></tbody>
-
 </table>
-
 </div>
 
 </div>
@@ -128,34 +126,45 @@ img{border-radius:50%;}
 
 /* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
-window.location.href="login.html";
+window.location.href="../login.html";
 }
 
-/* Farmer ID Generator */
-function generateFarmerID(){
-
-let last = localStorage.getItem("farmerCounter") || 0;
-last = parseInt(last) + 1;
-localStorage.setItem("farmerCounter", last);
-
-return "FRM" + String(last).padStart(5,'0');
-}
-
-/* Load Staff */
-let staffList = JSON.parse(localStorage.getItem("staff")) || [];
-
-staffList.forEach(s=>{
-document.getElementById("staff").innerHTML +=
-`<option>${s.username}</option>`;
+/* Auto plants */
+document.getElementById("acres").addEventListener("input", function(){
+let acres = parseFloat(this.value) || 0;
+document.getElementById("plants").value = acres * 300;
 });
 
-/* Data */
-let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
+/* Load staff */
+let staffList = JSON.parse(localStorage.getItem("staff")) || [];
+let staffDropdown = document.getElementById("staff");
+
+staffDropdown.innerHTML = "<option value=''>Select Staff</option>";
+
+staffList.forEach(s=>{
+staffDropdown.innerHTML += `<option value="${s.username}">${s.username}</option>`;
+});
 
 /* Add Farmer */
 function addFarmer(){
 
+let name = document.getElementById("name").value.trim();
+let phone = document.getElementById("phone").value.trim();
+let location = document.getElementById("location").value.trim();
+let acres = parseFloat(document.getElementById("acres").value) || 0;
+let plants = acres * 300;
+let staff = document.getElementById("staff").value;
 let file = document.getElementById("photo").files[0];
+
+if(!name || !phone || !location){
+alert("Fill all fields");
+return;
+}
+
+if(!staff){
+alert("Select staff");
+return;
+}
 
 if(!file){
 alert("Upload photo");
@@ -166,43 +175,52 @@ let reader = new FileReader();
 
 reader.onload = function(){
 
-let farmer = {
-id: generateFarmerID(),
-name: document.getElementById("name").value,
-phone: document.getElementById("phone").value,
-location: document.getElementById("location").value,
-acres: document.getElementById("acres").value,
-plants: document.getElementById("plants").value,
-staff: document.getElementById("staff").value,
-photo: reader.result
-};
+let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 
-farmers.push(farmer);
+let id = "FRM" + String(farmers.length + 1).padStart(5,'0');
+
+farmers.push({
+id,
+name,
+phone,
+location,
+acres,
+plants,
+staff,
+photo: reader.result
+});
 
 localStorage.setItem("farmers", JSON.stringify(farmers));
 
-load();
+alert("Farmer added successfully");
 
-/* Clear */
+loadFarmers();
+
+/* Reset */
 document.getElementById("name").value="";
 document.getElementById("phone").value="";
 document.getElementById("location").value="";
 document.getElementById("acres").value="";
 document.getElementById("plants").value="";
+document.getElementById("staff").value="";
+document.getElementById("photo").value="";
+
 };
 
 reader.readAsDataURL(file);
 
 }
 
-/* Load */
-function load(){
+/* Load Farmers */
+function loadFarmers(){
 
+let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 let table = document.getElementById("table");
+
 table.innerHTML="";
 
 farmers.forEach(f=>{
-table.innerHTML+=`
+table.innerHTML += `
 <tr>
 <td>${f.id}</td>
 <td><img src="${f.photo}" width="40"></td>
@@ -218,7 +236,13 @@ table.innerHTML+=`
 
 }
 
-load();
+loadFarmers();
+
+/* Logout */
+function logout(){
+localStorage.clear();
+window.location.href="../login.html";
+}
 
 </script>
 
