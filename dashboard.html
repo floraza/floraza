@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floraza Dashboard</title>
+<title>Floraza 2030 Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -16,8 +16,8 @@ body{display:flex;background:#f4f6f9;}
 .sidebar{
 width:240px;height:100vh;background:#2e7d32;color:white;padding:20px;position:fixed;
 }
-.logo-box{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.logo-box img{width:40px;}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.logo img{width:40px;}
 
 .sidebar a{
 display:block;color:white;text-decoration:none;margin:10px 0;padding:10px;border-radius:8px;
@@ -37,16 +37,28 @@ background:#388e3c;color:white;padding:15px;border-radius:10px;text-align:center
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
+margin-bottom:20px;
 }
 
 .card{
 background:white;padding:20px;border-radius:15px;text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.1);
 }
-
 .card p{
 font-size:22px;color:#2e7d32;font-weight:bold;
 }
+
+/* Sections */
+.box{
+background:white;padding:20px;border-radius:15px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;}
+th{background:#2e7d32;color:white;}
+th,td{padding:10px;border:1px solid #ddd;text-align:center;}
 </style>
 
 </head>
@@ -56,10 +68,9 @@ font-size:22px;color:#2e7d32;font-weight:bold;
 <!-- Sidebar -->
 
 <div class="sidebar">
-
-<div class="logo-box">
-<img src="logo.png">
-<h3>Floraza</h3>
+<div class="logo">
+<img src="../assets/logo.png">
+<h3>Floraza 2030</h3>
 </div>
 
 <a href="dashboard.html">Dashboard</a> <a href="staff.html">Staff</a> <a href="farmers.html">Farmers</a> <a href="sales.html">Sales</a> <a href="delivery.html">Delivery</a> <a href="inventory.html">Inventory</a> <a href="incentives.html">Performance Incentives</a> <a href="activities.html">Activities</a> <a href="gis-map.html">GIS Map</a> <a href="reports.html">Reports</a> <a href="settings.html">Settings</a>
@@ -70,47 +81,42 @@ font-size:22px;color:#2e7d32;font-weight:bold;
 
 <div class="main">
 
-<div class="header">
-📊 Floraza Dashboard
-</div>
+<div class="header">📊 Admin Control Dashboard</div>
+
+<!-- Summary -->
 
 <div class="grid">
-
-<div class="card">
-<h3>Total Farmers</h3>
-<p id="farmers">0</p>
+<div class="card"><h3>Total Farmers</h3><p id="farmers">0</p></div>
+<div class="card"><h3>Total Plants</h3><p id="plants">0</p></div>
+<div class="card"><h3>Total Sales ₹</h3><p id="sales">0</p></div>
+<div class="card"><h3>Total Incentives ₹</h3><p id="incentives">0</p></div>
+<div class="card"><h3>Deliveries</h3><p id="delivery">0</p></div>
+<div class="card"><h3>Activities</h3><p id="activities">0</p></div>
 </div>
 
-<div class="card">
-<h3>Total Plants</h3>
-<p id="plants">0</p>
+<!-- Daily Stats -->
+
+<div class="box">
+<h3>📅 Today Overview</h3>
+<p>Sales Today: ₹ <span id="todaySales">0</span></p>
+<p>Activities Today: <span id="todayActivities">0</span></p>
 </div>
 
-<div class="card">
-<h3>Total Sales ₹</h3>
-<p id="sales">0</p>
+<!-- Low Stock Alert -->
+
+<div class="box">
+<h3>⚠️ Low Stock Alert</h3>
+<ul id="lowStock"></ul>
 </div>
 
-<div class="card">
-<h3>Total Incentives ₹</h3>
-<p id="incentives">0</p>
-</div>
+<!-- Recent Activities -->
 
-<div class="card">
-<h3>Total Deliveries</h3>
-<p id="delivery">0</p>
-</div>
-
-<div class="card">
-<h3>Total Activities</h3>
-<p id="activities">0</p>
-</div>
-
-<div class="card">
-<h3>Monthly Visits</h3>
-<p id="monthly">0</p>
-</div>
-
+<div class="box">
+<h3>📋 Recent Activities</h3>
+<table>
+<tr><th>Date</th><th>Farmer</th><th>Work</th><th>Staff</th></tr>
+<tbody id="recent"></tbody>
+</table>
 </div>
 
 </div>
@@ -119,7 +125,7 @@ font-size:22px;color:#2e7d32;font-weight:bold;
 
 /* Protect */
 if(localStorage.getItem("loggedIn")!=="true"){
-window.location.href="login.html";
+window.location.href="../login.html";
 }
 
 /* Load Data */
@@ -127,37 +133,50 @@ let farmers = JSON.parse(localStorage.getItem("farmers")) || [];
 let sales = JSON.parse(localStorage.getItem("sales")) || [];
 let delivery = JSON.parse(localStorage.getItem("delivery")) || [];
 let activities = JSON.parse(localStorage.getItem("activities")) || [];
+let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
 
-/* Farmers */
+/* Totals */
 document.getElementById("farmers").innerText = farmers.length;
 
-/* Plants */
-let totalPlants = farmers.reduce((sum,f)=>sum+(parseInt(f.plants)||0),0);
-document.getElementById("plants").innerText = totalPlants;
+let plants = farmers.reduce((a,f)=>a+(parseInt(f.plants)||0),0);
+document.getElementById("plants").innerText = plants;
 
-/* Sales */
-let totalSales = sales.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+let totalSales = sales.reduce((a,s)=>a+(s.amount||0),0);
 document.getElementById("sales").innerText = totalSales.toFixed(0);
 
-/* Incentives */
-let totalIncentives = totalSales * 0.2;
-document.getElementById("incentives").innerText = totalIncentives.toFixed(0);
-
-/* Delivery */
+document.getElementById("incentives").innerText = (totalSales*0.2).toFixed(0);
 document.getElementById("delivery").innerText = delivery.length;
-
-/* Activities */
 document.getElementById("activities").innerText = activities.length;
 
-/* Monthly Visits */
-let now = new Date();
+/* Today Stats */
+let today = new Date().toDateString();
 
-let monthly = activities.filter(a=>{
-let d = new Date(a.date);
-return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+let todaySales = sales.filter(s=>new Date().toDateString()===today)
+.reduce((a,b)=>a+(b.amount||0),0);
+
+let todayActivities = activities.filter(a=>new Date(a.date).toDateString()===today);
+
+document.getElementById("todaySales").innerText = todaySales.toFixed(0);
+document.getElementById("todayActivities").innerText = todayActivities.length;
+
+/* Low Stock */
+for(let key in inventory){
+if(inventory[key] < 10){
+document.getElementById("lowStock").innerHTML += `<li>${key} : ${inventory[key]}</li>`;
+}
+}
+
+/* Recent Activities */
+activities.slice(-5).reverse().forEach(a=>{
+document.getElementById("recent").innerHTML += `
+<tr>
+<td>${a.date}</td>
+<td>${a.farmerId}</td>
+<td>${a.task}</td>
+<td>${a.staff}</td>
+</tr>
+`;
 });
-
-document.getElementById("monthly").innerText = monthly.length;
 
 </script>
 
