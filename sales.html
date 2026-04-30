@@ -183,7 +183,15 @@ let amount = price * qty;
 let incentive = amount * 0.1;
 
 /* Save Sale */
-sales.push({farmerId,name,qty,amount,incentive,staff});
+sales.push({
+farmerId,
+name,
+qty,
+amount,
+incentive,
+staff,
+date: new Date().toISOString()   // ✅ IMPORTANT
+});
 localStorage.setItem("sales", JSON.stringify(sales));
 
 /* Update Inventory */
